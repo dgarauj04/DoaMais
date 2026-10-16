@@ -294,7 +294,7 @@ function EntradaContent() {
                     <span>
                       {modoNovoItemInline
                         ? "← Selecionar produto existente"
-                        : "+ Cadastrar novo item"}
+                        : "Cadastrar novo item"}
                     </span>
                   </button>
                 </div>
@@ -316,7 +316,7 @@ function EntradaContent() {
                     </Select>
                     {itensDaCategoria.length === 0 && !loadingItens && (
                       <p className="text-xs text-amber-700 mt-1">
-                        Nenhum produto cadastrado nesta categoria. Clique em "+ Cadastrar novo item" acima.
+                        Nenhum produto cadastrado nesta categoria. Clique em "Cadastrar novo item" acima.
                       </p>
                     )}
                   </div>
