@@ -1,5 +1,7 @@
 # 🧺 DoaMais — Controle Inteligente de Doações e Estoque
 
+![Logo DoaMais](/public/Logo-DoaMais.png)
+
 > MVP low-code/no-code para organizações sociais substituírem cadernos e planilhas soltas por um sistema simples de **entradas, saídas, saldo de estoque e alertas automáticos**.
 
 **Desafio 3 — Tecnologia para o Impacto Social** · Kodie Academy · Power Developers
@@ -31,11 +33,11 @@ O recebimento e a distribuição de recursos (alimentos, roupas, materiais escol
 
 ### 2. O usuário
 
-| Perfil | O que faz no dia a dia |
-|---|---|
-| **Voluntários de recepção e estoque** | Registram entradas de doações, frequentemente sob pressão e com pouco tempo. |
-| **Coordenadores de distribuição** | Organizam os recursos que vão para as famílias e precisam saber o saldo real disponível. |
-| **Gestores / Diretoria e doadores** | Acompanham a disponibilidade e precisam de transparência sobre entradas, saídas e impacto gerado. |
+| Perfil                                | O que faz no dia a dia                                                                            |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| **Voluntários de recepção e estoque** | Registram entradas de doações, frequentemente sob pressão e com pouco tempo.                      |
+| **Coordenadores de distribuição**     | Organizam os recursos que vão para as famílias e precisam saber o saldo real disponível.          |
+| **Gestores / Diretoria e doadores**   | Acompanham a disponibilidade e precisam de transparência sobre entradas, saídas e impacto gerado. |
 
 ### 3. A solução
 
@@ -52,25 +54,25 @@ Um sistema simples de inventário e controle de recursos que registra entradas e
 
 ## 🔗 Links
 
-| Recurso | Link |
-|---|---|
-| 🌐 **MVP (aplicação publicada)** | `https://doamais.vercel.app/` |
-| 💻 **Repositório** | `https://github.com/dgarauj04/DoaMais` |
+| Recurso                               | Link                                                                                                                   |
+| ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| 🌐 **MVP (aplicação publicada)**      | `https://doamais.vercel.app/`                                                                                          |
+| 💻 **Repositório**                    | `https://github.com/dgarauj04/DoaMais`                                                                                 |
 | 📊 **Banco de dados (Google Sheets)** | [Abrir planilha](https://docs.google.com/spreadsheets/d/1BmMa4MgyXv-l6y_cs6ea2Yt26jmnoZALvQDdaLf5ON0/edit?usp=sharing) |
-| ⚙️ **Automação (Make)** | Cenário "DoaMais" — endpoint configurado via variável de ambiente (veja [Como executar](#-como-executar-o-projeto)) |
+| ⚙️ **Automação (Make)**               | Cenário "DoaMais" — endpoint configurado via variável de ambiente (veja [Como executar](#-como-executar-o-projeto))    |
 
 ---
 
 ## 🛠️ Stack utilizada
 
-| Camada | Tecnologia |
-|---|---|
-| **Interface** | Vite + React + TypeScript |
-| **Estilo** | Tailwind CSS + SCSS + shadcn/ui · fonte Inter · ícones lucide-react |
-| **Gráficos** | Recharts (gráfico de barras agrupadas responsivo) |
-| **Banco de dados** | Google Sheets (3 abas, saldo calculado por fórmulas `SOMASE`) |
-| **Automação / integração** | Make (Custom Webhook, Router, Google Sheets, Gmail) |
-| **Apoio de IA** | Prompt estruturado para gerar a primeira versão da interface |
+| Camada                     | Tecnologia                                                          |
+| -------------------------- | ------------------------------------------------------------------- |
+| **Interface**              | Vite + React + TypeScript                                           |
+| **Estilo**                 | Tailwind CSS + SCSS + shadcn/ui · fonte Inter · ícones lucide-react |
+| **Gráficos**               | Recharts (gráfico de barras agrupadas responsivo)                   |
+| **Banco de dados**         | Google Sheets (3 abas, saldo calculado por fórmulas `SOMASE`)       |
+| **Automação / integração** | Make (Custom Webhook, Router, Google Sheets, Gmail)                 |
+| **Apoio de IA**            | Prompt estruturado para gerar a primeira versão da interface        |
 
 > A aplicação **não possui backend próprio, autenticação nem banco local**. O React conversa com o Make por webhook, e o Make lê e grava na planilha.
 
@@ -79,31 +81,37 @@ Um sistema simples de inventário e controle de recursos que registra entradas e
 ## ✨ Funcionalidades
 
 ### 📊 Dashboard (`/`)
+
 - 4 cards de KPI: **Itens em estoque**, **Vencendo em 7 dias** (vermelho), **Abaixo do mínimo** (âmbar) e **Distribuído no mês**.
 - Gráfico de barras agrupadas: **Entradas × Distribuição × Perdas** nos últimos 6 meses.
 - Painel **Alertas de validade**: itens vencidos ou vencendo em até 7 dias, com badge "vence em X dias".
 - Tabela **Últimas movimentações** (8 mais recentes).
 
 ### 📦 Estoque (`/estoque`)
+
 - Filtros por nome, categoria e status (🟢 OK · 🟡 Abaixo do mínimo · 🔴 Vencendo/vencido).
 - Tabela com saldo, estoque mínimo, validade mais próxima e status em badge colorida.
 - Botão **Novo produto** (envia `tipo_acao: "novo_item"`) e **Registrar saída** por linha, com o item pré-selecionado.
 
 ### 🕘 Histórico (`/historico`)
+
 - Filtros por tipo, período e busca por item, doador ou família.
 - Tabela completa com colunas ordenáveis por data e quantidade e observação truncada com tooltip.
 - Badges: entrada (verde), distribuição (azul), consumo (cinza), perda (vermelho).
 
 ### ➕ Nova Entrada (`/entrada`)
+
 - Formulário com data, categoria, item (com busca e opção **"+ Cadastrar novo item"**), quantidade, unidade, tipo e contato do doador e observação.
-- Campo **validade** exibido apenas para a categoria *Alimentos*.
+- Campo **validade** exibido apenas para a categoria _Alimentos_.
 - Validação de contato (e-mail com `@`), toast de sucesso e botão com estado de loading.
 
 ### ➖ Nova Saída (`/saida`)
+
 - Tipos de saída: **Distribuição** (família + bairro), **Consumo interno** e **Perda** (motivo: Vencimento, Avaria, Outro).
 - **Bloqueia saídas maiores que o saldo** com a mensagem "Saldo insuficiente: existem X un disponíveis".
 
 ### 🤖 Automações (Make)
+
 - Gravação automática de entradas e saídas na planilha.
 - **E-mail de agradecimento** ao doador identificado.
 - **Alerta de nível crítico** ao coordenador quando `Saldo_Atual <= Estoque_Minimo`.
@@ -114,41 +122,23 @@ Um sistema simples de inventário e controle de recursos que registra entradas e
 
 ---
 
-## 🏗️ Arquitetura
-
-```mermaid
-flowchart LR
-    U[Voluntário / Coordenador] --> N[Next.js<br/>formulários + dashboard]
-    N -- POST JSON<br/>tipo_acao --> W[Make<br/>Custom Webhook]
-    W --> R{Router}
-    R -- entrada --> A[Grava em Entradas<br/>+ e-mail ao doador]
-    R -- saida --> B[Confere saldo<br/>grava em Saidas<br/>+ alerta de mínimo]
-    R -- novo_item --> C[Verifica duplicidade<br/>grava em Estoque]
-    A --> S[(Google Sheets)]
-    B --> S
-    C --> S
-    S -- saldo_atual --> N
-```
-
----
-
 ## 🗄️ Banco de dados (Google Sheets)
 
 Planilha com **3 abas**. O saldo é calculado **somente por fórmulas nativas** (sem macros ou scripts).
 
 ### Aba `Estoque`
 
-| Coluna | Descrição |
-|---|---|
-| `ID` | Identificador do item (ex.: `ITM-001`) |
-| `Nome` | Nome do item |
-| `Categoria` | Alimentos, Higiene, Roupas, Material Escolar etc. |
-| `Unidade` | kg, L, un, caixa, pacote |
-| `Controla_Validade` | `TRUE` / `FALSE` |
-| `Estoque_Minimo` | Nível mínimo para disparar alerta |
-| `Total_Entradas` | `SOMASE` sobre a aba Entradas |
-| `Total_Saidas` | `SOMASE` sobre a aba Saidas |
-| `Saldo_Atual` | `Total_Entradas - Total_Saidas` |
+| Coluna                  | Descrição                                                               |
+| ----------------------- | ----------------------------------------------------------------------- |
+| `ID`                    | Identificador do item (ex.: `ITM-001`)                                  |
+| `Nome`                  | Nome do item                                                            |
+| `Categoria`             | Alimentos, Higiene, Roupas, Material Escolar etc.                       |
+| `Unidade`               | kg, L, un, caixa, pacote                                                |
+| `Controla_Validade`     | `TRUE` / `FALSE`                                                        |
+| `Estoque_Minimo`        | Nível mínimo para disparar alerta                                       |
+| `Total_Entradas`        | `SOMASE` sobre a aba Entradas                                           |
+| `Total_Saidas`          | `SOMASE` sobre a aba Saidas                                             |
+| `Saldo_Atual`           | `Total_Entradas - Total_Saidas`                                         |
 | `Validade_Mais_Proxima` | Menor validade de lote do item (apenas se controla validade e há saldo) |
 
 Fórmulas da linha 2:
@@ -181,43 +171,48 @@ erDiagram
 
 Cenário único em versão híbrida: o Next.js faz a validação básica e o Make faz a **dupla checagem** e as automações.
 
+![Fluxo DoaMais](/public/doamais-make.gif)
+
 ### Módulo 1 — Custom Webhook
+
 Ponto de entrada. Recebe o JSON enviado pelo formulário do Next.js (que já valida, por exemplo, que a saída não excede o saldo disponível).
 
 ### Módulo 2 — Router
+
 Divide o fluxo conforme a variável `tipo_acao`.
 
 ### ➡️ Caminho A — Entrada (`tipo_acao = entrada`)
 
-| Módulo | Função |
-|---|---|
-| **3A · Google Sheets (Add a Row)** | Grava os dados na aba `Entradas`. |
-| **4A · Webhook Response** | Responde `200 OK` ao Next.js com `status`, `id_movimentacao`, `item_nome` e `quantidade`. |
-| **5A · Router (sub-rota)** | O Make continua em background. Filtro: `doador_tipo` ≠ Anônimo **e** `doador_contato` contém `@`. |
-| **6A · Gmail (Send an Email)** | Envia o e-mail de agradecimento ("Olá [Doador_Nome], o DoaMais agradece..."). Com tratamento de erro para o fluxo não parar se o Gmail falhar. |
+| Módulo                             | Função                                                                                                                                         |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| **3A · Google Sheets (Add a Row)** | Grava os dados na aba `Entradas`.                                                                                                              |
+| **4A · Webhook Response**          | Responde `200 OK` ao Next.js com `status`, `id_movimentacao`, `item_nome` e `quantidade`.                                                      |
+| **5A · Router (sub-rota)**         | O Make continua em background. Filtro: `doador_tipo` ≠ Anônimo **e** `doador_contato` contém `@`.                                              |
+| **6A · Gmail (Send an Email)**     | Envia o e-mail de agradecimento ("Olá [Doador_Nome], o DoaMais agradece..."). Com tratamento de erro para o fluxo não parar se o Gmail falhar. |
 
 ### ➡️ Caminho B — Saída (`tipo_acao = saida`)
 
-| Módulo | Função |
-|---|---|
-| **3B · Google Sheets (Search Rows)** | Confirma na aba `Estoque` se o saldo ainda é suficiente (dupla checagem para operações simultâneas). |
-| **4B · Router (condicional)** | Se `quantidade > Saldo_Atual`: devolve **erro 400** ao Next.js e **para o fluxo sem gravar nada**. Se válida: continua. |
-| **5B · Google Sheets (Add a Row)** | Registra a saída na aba `Saidas`. |
-| **6B · Webhook Response** | Responde `200 OK` ao Next.js. |
-| **7B · Google Sheets (Search Rows)** | Lê o novo `Saldo_Atual` na aba `Estoque`. |
-| **8B · Router (alerta)** | Filtro: `Saldo_Atual <= Estoque_Minimo`. |
-| **9B · Gmail (Send an Email)** | Dispara o alerta de nível crítico para o coordenador da ONG. |
+| Módulo                               | Função                                                                                                                  |
+| ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------- |
+| **3B · Google Sheets (Search Rows)** | Confirma na aba `Estoque` se o saldo ainda é suficiente (dupla checagem para operações simultâneas).                    |
+| **4B · Router (condicional)**        | Se `quantidade > Saldo_Atual`: devolve **erro 400** ao Next.js e **para o fluxo sem gravar nada**. Se válida: continua. |
+| **5B · Google Sheets (Add a Row)**   | Registra a saída na aba `Saidas`.                                                                                       |
+| **6B · Webhook Response**            | Responde `200 OK` ao Next.js.                                                                                           |
+| **7B · Google Sheets (Search Rows)** | Lê o novo `Saldo_Atual` na aba `Estoque`.                                                                               |
+| **8B · Router (alerta)**             | Filtro: `Saldo_Atual <= Estoque_Minimo`.                                                                                |
+| **9B · Gmail (Send an Email)**       | Dispara o alerta de nível crítico para o coordenador da ONG.                                                            |
 
 ### ➡️ Caminho C — Novo item (`tipo_acao = novo_item`)
 
-| Módulo | Função |
-|---|---|
-| **3C · Google Sheets (Search Rows)** | Procura se o produto já existe na aba `Estoque` (unicidade pelo nome). |
-| **4C · Router (condicional)** | Se já existe: devolve **erro 409 (Conflito)** ao Next.js. Se não existe: continua. |
-| **5C · Google Sheets (Add a Row)** | Registra o novo item em `Estoque`, gerando ID único e mantendo as fórmulas. |
-| **6C · Webhook Response** | Responde `200 OK` com o ID do novo produto. |
+| Módulo                               | Função                                                                             |
+| ------------------------------------ | ---------------------------------------------------------------------------------- |
+| **3C · Google Sheets (Search Rows)** | Procura se o produto já existe na aba `Estoque` (unicidade pelo nome).             |
+| **4C · Router (condicional)**        | Se já existe: devolve **erro 409 (Conflito)** ao Next.js. Se não existe: continua. |
+| **5C · Google Sheets (Add a Row)**   | Registra o novo item em `Estoque`, gerando ID único e mantendo as fórmulas.        |
+| **6C · Webhook Response**            | Responde `200 OK` com o ID do novo produto.                                        |
 
 ### Automações planejadas (evolução)
+
 - Varredura diária com alerta por WhatsApp/e-mail de itens que vencem em 7 dias.
 - Gatilho semanal que envia o relatório consolidado à diretoria.
 
@@ -227,10 +222,10 @@ Divide o fluxo conforme a variável `tipo_acao`.
 
 Toda requisição é um `POST` em JSON e **sempre** contém a chave `tipo_acao`.
 
-| `tipo_acao` | Quando é enviado |
-|---|---|
-| `entrada` | Formulário "Nova Entrada" |
-| `saida` | Formulário "Nova Saída" |
+| `tipo_acao` | Quando é enviado                                |
+| ----------- | ----------------------------------------------- |
+| `entrada`   | Formulário "Nova Entrada"                       |
+| `saida`     | Formulário "Nova Saída"                         |
 | `novo_item` | Botão "Novo produto" ou "+ Cadastrar novo item" |
 
 Exemplo ilustrativo (entrada):
@@ -251,11 +246,11 @@ Exemplo ilustrativo (entrada):
 
 Respostas tratadas pela interface:
 
-| Código | Significado |
-|---|---|
-| `200` | Sucesso (`status`, `id_movimentacao`, `item_nome`, `quantidade`) |
-| `400` | Saldo insuficiente (saída bloqueada pelo Make) |
-| `409` | Produto já cadastrado |
+| Código | Significado                                                      |
+| ------ | ---------------------------------------------------------------- |
+| `200`  | Sucesso (`status`, `id_movimentacao`, `item_nome`, `quantidade`) |
+| `400`  | Saldo insuficiente (saída bloqueada pelo Make)                   |
+| `409`  | Produto já cadastrado                                            |
 
 ---
 
@@ -388,6 +383,7 @@ doamais/
 ## 🚀 Como executar o projeto
 
 ### Pré-requisitos
+
 - Node.js 18 ou superior
 - Conta no Make com o cenário "DoaMais" ativo
 - Planilha Google Sheets com as 3 abas descritas acima
@@ -442,8 +438,8 @@ VITE_WEBHOOK_NOVO_ITEM=https://hook.us2.make.com/SEU_ID_DO_WEBHOOK
 
 ## 👥 Equipe
 
-| Nome | Papel |
-|---|---|
+| Nome                                                                                      | Papel                                                     |
+| ----------------------------------------------------------------------------------------- | --------------------------------------------------------- |
 | **[Douglas Araujo](https://github.com/dgarauj04)** — Dev Fullstack/Engenheiro de Software | Desenvolvimento, engenheiro de prompt, automação e design |
 
 ---

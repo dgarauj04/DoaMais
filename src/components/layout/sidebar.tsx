@@ -13,6 +13,7 @@ import {
   HelpCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import logoDoaMais from "@/assets/img/Logo-DoaMais.png";
 
 interface SidebarProps {
   className?: string;
@@ -78,17 +79,24 @@ export function Sidebar({ className }: SidebarProps) {
 
       <aside
         className={cn(
-          "fixed top-0 bottom-0 left-0 z-40 w-64 bg-white border-r border-stone-200 flex flex-col justify-between transition-transform duration-200 ease-in-out md:translate-x-0 shadow-xs",
+          "fixed top-0 bottom-0 left-0 z-40 w-64 bg-mauve-400/15 border-r border-stone-200 flex flex-col justify-between transition-transform duration-200 ease-in-out md:translate-x-0 shadow-xs",
           mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0",
           className
         )}
       >
         <div className="flex flex-col flex-1 overflow-y-auto">
-          <div className="p-6 pb-4 border-b border-stone-100 flex items-center justify-between">
-            <Link to="/" onClick={closeMobile} className="flex items-center gap-3 group">
-              <div className="logo">
-                <img src="../../assets/img/Logo-DoaMais.png" alt="" />
-                </div>
+          <div className="p-4 pb-3 border-b border-stone-100 flex items-center justify-between">
+            <Link
+              to="/"
+              onClick={closeMobile}
+              className="flex items-center group transition-transform hover:opacity-95"
+              title="DoaMais - Início"
+            >
+              <img
+                src={logoDoaMais}
+                alt="DoaMais - Ação Social Comunitária"
+                className="h-16 w-auto max-w-[200px] object-contain"
+              />
             </Link>
 
             <button

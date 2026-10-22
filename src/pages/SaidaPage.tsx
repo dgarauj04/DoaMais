@@ -153,9 +153,10 @@ export function SaidaPage() {
         item_nome: itemSelecionado.item_nome,
         quantidade: Number(quantidade),
         unidade: itemSelecionado.unidade,
-        familia_nome: tipoSaida === "distribuicao" ? familiaNome.trim() : undefined,
-        familia_bairro: tipoSaida === "distribuicao" ? familiaBairro.trim() : undefined,
-        motivo_perda: tipoSaida === "perda" ? motivoPerda : undefined,
+        familia_nome: tipoSaida === "distribuicao" ? familiaNome.trim() : "",
+        bairro: tipoSaida === "distribuicao" ? familiaBairro.trim() : "",
+        familia_bairro: tipoSaida === "distribuicao" ? familiaBairro.trim() : "",
+        motivo_perda: tipoSaida === "perda" ? motivoPerda : "",
         responsavel: responsavel.trim(),
         observacao: observacao.trim() || undefined,
       });
@@ -323,7 +324,7 @@ export function SaidaPage() {
                   <option value="">Selecione o item do estoque...</option>
                   {itens.map((it) => (
                     <option key={it.id} value={it.id}>
-                      {it.item_nome} — {it.saldo_atual} {it.unidade} em estoque
+                      [{it.id}] {it.item_nome} — {it.saldo_atual} {it.unidade} em estoque
                     </option>
                   ))}
                 </Select>

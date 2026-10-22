@@ -20,7 +20,7 @@ export function Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-30 h-16 bg-white/95 backdrop-blur-md border-b border-stone-200 px-4 sm:px-8 flex items-center justify-between">
+      <header className="sticky top-0 z-30 h-16 bg-mauve-400/15 backdrop-blur-md border-b border-stone-200 px-4 sm:px-8 flex items-center justify-between">
         <div className="flex items-center gap-3 pl-12 md:pl-0">
           <div className="hidden sm:block">
             <h1 className="text-sm font-semibold text-stone-900 tracking-tight">

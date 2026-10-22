@@ -306,7 +306,7 @@ export function EntradaPage() {
                       <option value="">Selecione um produto cadastrado...</option>
                       {itensDaCategoria.map((it) => (
                         <option key={it.id} value={it.id}>
-                          {it.item_nome} (Saldo atual: {it.saldo_atual} {it.unidade})
+                          [{it.id}] {it.item_nome} (Saldo atual: {it.saldo_atual} {it.unidade})
                         </option>
                       ))}
                     </Select>

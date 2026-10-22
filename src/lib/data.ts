@@ -23,10 +23,10 @@ export interface Item {
 }
 
 export interface Movimentacao {
-  id: string;
+  id: string; // Gerado automaticamente pelo Sheets / Webhook
   data: string; // ISO YYYY-MM-DD
   tipo: TipoMovimentacao;
-  item_id: string;
+  item_id: string; // Código do item gerado no Sheets (ex: "ITM-0001")
   item_nome: string;
   quantidade: number; // sempre positiva
   unidade: string;
@@ -36,6 +36,7 @@ export interface Movimentacao {
   validade_lote?: string;
   familia_nome?: string;
   familia_bairro?: string;
+  bairro?: string;
   responsavel?: string;
   motivo_perda?: string;
   observacao?: string;
@@ -43,41 +44,45 @@ export interface Movimentacao {
 
 export interface EntradaPayload {
   tipo_acao: "entrada";
-  data: string;
-  item_id: string;
+  item_id: string; // "ITM-0001"
   item_nome: string;
-  categoria: CategoriaItem;
   quantidade: number;
-  unidade: UnidadeItem;
+  unidade: string;
   doador_tipo: DoadorTipo;
   doador_nome?: string;
   doador_contato?: string;
   validade_lote?: string;
   observacao?: string;
+  // Campos opcionais de compatibilidade
+  data?: string;
+  categoria?: CategoriaItem;
 }
 
 export interface SaidaPayload {
   tipo_acao: "saida";
-  data: string;
   tipo: "distribuicao" | "consumo" | "perda";
-  item_id: string;
+  item_id: string; // "ITM-0002"
   item_nome: string;
   quantidade: number;
   unidade: string;
   familia_nome?: string;
-  familia_bairro?: string;
+  bairro?: string;
   motivo_perda?: string;
   responsavel: string;
   observacao?: string;
+  // Campos opcionais de compatibilidade
+  data?: string;
+  familia_bairro?: string;
 }
 
 export interface NovoItemPayload {
   tipo_acao: "novo_item";
   item_nome: string;
   categoria: CategoriaItem;
-  unidade: UnidadeItem;
+  unidade: UnidadeItem | string;
   controla_validade: boolean;
   estoque_minimo: number;
+  // Campos opcionais para inicialização local
   saldo_inicial?: number;
   validade_inicial?: string;
 }
@@ -87,7 +92,7 @@ export interface NovoItemPayload {
 // ----------------------------------------------------------------------------
 const ITENS_MOCK_INICIAIS: Item[] = [
   {
-    id: "item-01",
+    id: "ITM-0001",
     item_nome: "Arroz Agulhinha 5kg",
     categoria: "Alimentos",
     unidade: "caixa",
@@ -97,7 +102,7 @@ const ITENS_MOCK_INICIAIS: Item[] = [
     validade_mais_proxima: "2027-04-10",
   },
   {
-    id: "item-02",
+    id: "ITM-0002",
     item_nome: "Feijão Carioca Tipo 1",
     categoria: "Alimentos",
     unidade: "kg",
@@ -107,7 +112,7 @@ const ITENS_MOCK_INICIAIS: Item[] = [
     validade_mais_proxima: "2027-02-15",
   },
   {
-    id: "item-03",
+    id: "ITM-0003",
     item_nome: "Leite UHT Integral 1L",
     categoria: "Alimentos",
     unidade: "un",
@@ -117,7 +122,7 @@ const ITENS_MOCK_INICIAIS: Item[] = [
     validade_mais_proxima: "2026-10-24", // Vence em 4 dias
   },
   {
-    id: "item-04",
+    id: "ITM-0004",
     item_nome: "Macarrão Espaguete 500g",
     categoria: "Alimentos",
     unidade: "pacote",
@@ -127,7 +132,7 @@ const ITENS_MOCK_INICIAIS: Item[] = [
     validade_mais_proxima: "2027-06-30",
   },
   {
-    id: "item-05",
+    id: "ITM-0005",
     item_nome: "Óleo de Soja 900ml",
     categoria: "Alimentos",
     unidade: "un",
@@ -137,7 +142,7 @@ const ITENS_MOCK_INICIAIS: Item[] = [
     validade_mais_proxima: "2027-05-18",
   },
   {
-    id: "item-06",
+    id: "ITM-0006",
     item_nome: "Sardinha em Lata 125g",
     categoria: "Alimentos",
     unidade: "un",
@@ -147,7 +152,7 @@ const ITENS_MOCK_INICIAIS: Item[] = [
     validade_mais_proxima: "2028-01-20",
   },
   {
-    id: "item-07",
+    id: "ITM-0007",
     item_nome: "Farinha de Trigo Especial 1kg",
     categoria: "Alimentos",
     unidade: "kg",
@@ -157,7 +162,7 @@ const ITENS_MOCK_INICIAIS: Item[] = [
     validade_mais_proxima: "2026-10-22", // Vence em 2 dias
   },
   {
-    id: "item-08",
+    id: "ITM-0008",
     item_nome: "Biscoito Maisena 400g",
     categoria: "Alimentos",
     unidade: "pacote",
@@ -167,7 +172,7 @@ const ITENS_MOCK_INICIAIS: Item[] = [
     validade_mais_proxima: "2026-10-26", // Vence em 6 dias
   },
   {
-    id: "item-09",
+    id: "ITM-0009",
     item_nome: "Iogurte Natural 170g",
     categoria: "Alimentos",
     unidade: "un",
@@ -177,7 +182,7 @@ const ITENS_MOCK_INICIAIS: Item[] = [
     validade_mais_proxima: "2026-10-16", // Vencido há 4 dias!
   },
   {
-    id: "item-10",
+    id: "ITM-0010",
     item_nome: "Sabonete em Barra 90g",
     categoria: "Higiene",
     unidade: "un",
@@ -187,7 +192,7 @@ const ITENS_MOCK_INICIAIS: Item[] = [
     validade_mais_proxima: null,
   },
   {
-    id: "item-11",
+    id: "ITM-0011",
     item_nome: "Detergente Líquido Neutro 500ml",
     categoria: "Higiene",
     unidade: "un",
@@ -197,7 +202,7 @@ const ITENS_MOCK_INICIAIS: Item[] = [
     validade_mais_proxima: null,
   },
   {
-    id: "item-12",
+    id: "ITM-0012",
     item_nome: "Creme Dental Flúor 90g",
     categoria: "Higiene",
     unidade: "un",
@@ -207,7 +212,7 @@ const ITENS_MOCK_INICIAIS: Item[] = [
     validade_mais_proxima: null,
   },
   {
-    id: "item-13",
+    id: "ITM-0013",
     item_nome: "Água Sanitária 1L",
     categoria: "Higiene",
     unidade: "L",
@@ -217,7 +222,7 @@ const ITENS_MOCK_INICIAIS: Item[] = [
     validade_mais_proxima: null,
   },
   {
-    id: "item-14",
+    id: "ITM-0014",
     item_nome: "Cobertores Térmicos de Casal",
     categoria: "Roupa",
     unidade: "un",
@@ -227,7 +232,7 @@ const ITENS_MOCK_INICIAIS: Item[] = [
     validade_mais_proxima: null,
   },
   {
-    id: "item-15",
+    id: "ITM-0015",
     item_nome: "Camisetas Infantis Algodão",
     categoria: "Roupa",
     unidade: "un",
@@ -237,7 +242,7 @@ const ITENS_MOCK_INICIAIS: Item[] = [
     validade_mais_proxima: null,
   },
   {
-    id: "item-16",
+    id: "ITM-0016",
     item_nome: "Agasalhos de Lã Juvenil",
     categoria: "Roupa",
     unidade: "un",
@@ -247,7 +252,7 @@ const ITENS_MOCK_INICIAIS: Item[] = [
     validade_mais_proxima: null,
   },
   {
-    id: "item-17",
+    id: "ITM-0017",
     item_nome: "Cadernos Universitários 96 fls",
     categoria: "Material Escolar",
     unidade: "un",
@@ -257,7 +262,7 @@ const ITENS_MOCK_INICIAIS: Item[] = [
     validade_mais_proxima: null,
   },
   {
-    id: "item-18",
+    id: "ITM-0018",
     item_nome: "Caixa de Lápis de Cor 12 Cores",
     categoria: "Material Escolar",
     unidade: "caixa",
@@ -274,12 +279,13 @@ const MOVIMENTACOES_MOCK_INICIAIS: Movimentacao[] = [
     id: "mov-41",
     data: "2026-10-20",
     tipo: "distribuicao",
-    item_id: "item-01",
+    item_id: "ITM-0001",
     item_nome: "Arroz Agulhinha 5kg",
     quantidade: 2,
     unidade: "caixa",
     familia_nome: "Família Barbosa",
     familia_bairro: "Vila Progresso",
+    bairro: "Vila Progresso",
     responsavel: "Assistente Ana Lúcia",
     observacao: "Entrega emergencial cesta básica",
   },
@@ -287,7 +293,7 @@ const MOVIMENTACOES_MOCK_INICIAIS: Movimentacao[] = [
     id: "mov-40",
     data: "2026-10-18",
     tipo: "entrada",
-    item_id: "item-03",
+    item_id: "ITM-0003",
     item_nome: "Leite UHT Integral 1L",
     quantidade: 24,
     unidade: "un",
@@ -301,12 +307,13 @@ const MOVIMENTACOES_MOCK_INICIAIS: Movimentacao[] = [
     id: "mov-39",
     data: "2026-10-15",
     tipo: "distribuicao",
-    item_id: "item-02",
+    item_id: "ITM-0002",
     item_nome: "Feijão Carioca Tipo 1",
     quantidade: 5,
     unidade: "kg",
     familia_nome: "Família Santos",
     familia_bairro: "Jardim Esperança",
+    bairro: "Jardim Esperança",
     responsavel: "Carlos Eduardo",
     observacao: "Atendimento semanal",
   },
@@ -314,7 +321,7 @@ const MOVIMENTACOES_MOCK_INICIAIS: Movimentacao[] = [
     id: "mov-38",
     data: "2026-10-14",
     tipo: "perda",
-    item_id: "item-09",
+    item_id: "ITM-0009",
     item_nome: "Iogurte Natural 170g",
     quantidade: 2,
     unidade: "un",
@@ -326,7 +333,7 @@ const MOVIMENTACOES_MOCK_INICIAIS: Movimentacao[] = [
     id: "mov-37",
     data: "2026-10-10",
     tipo: "consumo",
-    item_id: "item-11",
+    item_id: "ITM-0011",
     item_nome: "Detergente Líquido Neutro 500ml",
     quantidade: 2,
     unidade: "un",
@@ -337,7 +344,7 @@ const MOVIMENTACOES_MOCK_INICIAIS: Movimentacao[] = [
     id: "mov-36",
     data: "2026-10-08",
     tipo: "entrada",
-    item_id: "item-10",
+    item_id: "ITM-0010",
     item_nome: "Sabonete em Barra 90g",
     quantidade: 30,
     unidade: "un",
@@ -350,12 +357,13 @@ const MOVIMENTACOES_MOCK_INICIAIS: Movimentacao[] = [
     id: "mov-35",
     data: "2026-10-05",
     tipo: "distribuicao",
-    item_id: "item-14",
+    item_id: "ITM-0014",
     item_nome: "Cobertores Térmicos de Casal",
     quantidade: 4,
     unidade: "un",
     familia_nome: "Família Ferreira",
     familia_bairro: "Morro da Paz",
+    bairro: "Morro da Paz",
     responsavel: "Assistente Ana Lúcia",
     observacao: "Atendimento frente fria",
   },
@@ -363,7 +371,7 @@ const MOVIMENTACOES_MOCK_INICIAIS: Movimentacao[] = [
     id: "mov-34",
     data: "2026-10-02",
     tipo: "entrada",
-    item_id: "item-01",
+    item_id: "ITM-0001",
     item_nome: "Arroz Agulhinha 5kg",
     quantidade: 10,
     unidade: "caixa",
@@ -379,12 +387,13 @@ const MOVIMENTACOES_MOCK_INICIAIS: Movimentacao[] = [
     id: "mov-33",
     data: "2026-09-28",
     tipo: "distribuicao",
-    item_id: "item-04",
+    item_id: "ITM-0004",
     item_nome: "Macarrão Espaguete 500g",
     quantidade: 12,
     unidade: "pacote",
     familia_nome: "Família Silva Ramos",
     familia_bairro: "Bairro São José",
+    bairro: "Bairro São José",
     responsavel: "Carlos Eduardo",
     observacao: "Apoio a família de 6 pessoas",
   },
@@ -392,12 +401,13 @@ const MOVIMENTACOES_MOCK_INICIAIS: Movimentacao[] = [
     id: "mov-32",
     data: "2026-09-25",
     tipo: "distribuicao",
-    item_id: "item-03",
+    item_id: "ITM-0003",
     item_nome: "Leite UHT Integral 1L",
     quantidade: 15,
     unidade: "un",
     familia_nome: "Família Costa",
     familia_bairro: "Jardim das Acácias",
+    bairro: "Jardim das Acácias",
     responsavel: "Mariana Souza",
     observacao: "Crianças na primeira infância",
   },
@@ -405,7 +415,7 @@ const MOVIMENTACOES_MOCK_INICIAIS: Movimentacao[] = [
     id: "mov-31",
     data: "2026-09-22",
     tipo: "entrada",
-    item_id: "item-17",
+    item_id: "ITM-0017",
     item_nome: "Cadernos Universitários 96 fls",
     quantidade: 25,
     unidade: "un",
@@ -418,7 +428,7 @@ const MOVIMENTACOES_MOCK_INICIAIS: Movimentacao[] = [
     id: "mov-30",
     data: "2026-09-20",
     tipo: "perda",
-    item_id: "item-05",
+    item_id: "ITM-0005",
     item_nome: "Óleo de Soja 900ml",
     quantidade: 1,
     unidade: "un",
@@ -430,19 +440,20 @@ const MOVIMENTACOES_MOCK_INICIAIS: Movimentacao[] = [
     id: "mov-29",
     data: "2026-09-15",
     tipo: "distribuicao",
-    item_id: "item-02",
+    item_id: "ITM-0002",
     item_nome: "Feijão Carioca Tipo 1",
     quantidade: 10,
     unidade: "kg",
     familia_nome: "Família Ribeiro",
     familia_bairro: "Vila Nova",
+    bairro: "Vila Nova",
     responsavel: "Assistente Ana Lúcia",
   },
   {
     id: "mov-28",
     data: "2026-09-10",
     tipo: "entrada",
-    item_id: "item-02",
+    item_id: "ITM-0002",
     item_nome: "Feijão Carioca Tipo 1",
     quantidade: 25,
     unidade: "kg",
@@ -453,7 +464,7 @@ const MOVIMENTACOES_MOCK_INICIAIS: Movimentacao[] = [
     id: "mov-27",
     data: "2026-09-05",
     tipo: "consumo",
-    item_id: "item-13",
+    item_id: "ITM-0013",
     item_nome: "Água Sanitária 1L",
     quantidade: 2,
     unidade: "L",
@@ -464,12 +475,13 @@ const MOVIMENTACOES_MOCK_INICIAIS: Movimentacao[] = [
     id: "mov-26",
     data: "2026-09-02",
     tipo: "distribuicao",
-    item_id: "item-15",
+    item_id: "ITM-0015",
     item_nome: "Camisetas Infantis Algodão",
     quantidade: 6,
     unidade: "un",
     familia_nome: "Família Nascimento",
     familia_bairro: "Jardim Esperança",
+    bairro: "Jardim Esperança",
     responsavel: "Mariana Souza",
   },
 
@@ -478,19 +490,20 @@ const MOVIMENTACOES_MOCK_INICIAIS: Movimentacao[] = [
     id: "mov-25",
     data: "2026-08-29",
     tipo: "distribuicao",
-    item_id: "item-01",
+    item_id: "ITM-0001",
     item_nome: "Arroz Agulhinha 5kg",
     quantidade: 8,
     unidade: "caixa",
     familia_nome: "Família Souza",
     familia_bairro: "Comunidade Estrela",
+    bairro: "Comunidade Estrela",
     responsavel: "Carlos Eduardo",
   },
   {
     id: "mov-24",
     data: "2026-08-25",
     tipo: "entrada",
-    item_id: "item-05",
+    item_id: "ITM-0005",
     item_nome: "Óleo de Soja 900ml",
     quantidade: 20,
     unidade: "un",
@@ -503,19 +516,20 @@ const MOVIMENTACOES_MOCK_INICIAIS: Movimentacao[] = [
     id: "mov-23",
     data: "2026-08-20",
     tipo: "distribuicao",
-    item_id: "item-12",
+    item_id: "ITM-0012",
     item_nome: "Creme Dental Flúor 90g",
     quantidade: 15,
     unidade: "un",
     familia_nome: "Associação de Moradores",
     familia_bairro: "Morro da Paz",
+    bairro: "Morro da Paz",
     responsavel: "Assistente Ana Lúcia",
   },
   {
     id: "mov-22",
     data: "2026-08-15",
     tipo: "entrada",
-    item_id: "item-18",
+    item_id: "ITM-0018",
     item_nome: "Caixa de Lápis de Cor 12 Cores",
     quantidade: 15,
     unidade: "caixa",
@@ -527,7 +541,7 @@ const MOVIMENTACOES_MOCK_INICIAIS: Movimentacao[] = [
     id: "mov-21",
     data: "2026-08-10",
     tipo: "perda",
-    item_id: "item-07",
+    item_id: "ITM-0007",
     item_nome: "Farinha de Trigo Especial 1kg",
     quantidade: 1,
     unidade: "kg",
@@ -539,12 +553,13 @@ const MOVIMENTACOES_MOCK_INICIAIS: Movimentacao[] = [
     id: "mov-20",
     data: "2026-08-04",
     tipo: "distribuicao",
-    item_id: "item-03",
+    item_id: "ITM-0003",
     item_nome: "Leite UHT Integral 1L",
     quantidade: 18,
     unidade: "un",
     familia_nome: "Família Moreira",
     familia_bairro: "Vila Progresso",
+    bairro: "Vila Progresso",
     responsavel: "Mariana Souza",
   },
 
@@ -553,12 +568,13 @@ const MOVIMENTACOES_MOCK_INICIAIS: Movimentacao[] = [
     id: "mov-19",
     data: "2026-07-28",
     tipo: "distribuicao",
-    item_id: "item-14",
+    item_id: "ITM-0014",
     item_nome: "Cobertores Térmicos de Casal",
     quantidade: 8,
     unidade: "un",
     familia_nome: "Ação de Inverno",
     familia_bairro: "Vila Nova e Região",
+    bairro: "Vila Nova e Região",
     responsavel: "Carlos Eduardo",
     observacao: "Noite mais fria do ano registrada",
   },
@@ -566,7 +582,7 @@ const MOVIMENTACOES_MOCK_INICIAIS: Movimentacao[] = [
     id: "mov-18",
     data: "2026-07-22",
     tipo: "entrada",
-    item_id: "item-14",
+    item_id: "ITM-0014",
     item_nome: "Cobertores Térmicos de Casal",
     quantidade: 15,
     unidade: "un",
@@ -578,19 +594,20 @@ const MOVIMENTACOES_MOCK_INICIAIS: Movimentacao[] = [
     id: "mov-17",
     data: "2026-07-18",
     tipo: "distribuicao",
-    item_id: "item-02",
+    item_id: "ITM-0002",
     item_nome: "Feijão Carioca Tipo 1",
     quantidade: 8,
     unidade: "kg",
     familia_nome: "Família Duarte",
     familia_bairro: "Jardim das Acácias",
+    bairro: "Jardim das Acácias",
     responsavel: "Assistente Ana Lúcia",
   },
   {
     id: "mov-16",
     data: "2026-07-12",
     tipo: "entrada",
-    item_id: "item-04",
+    item_id: "ITM-0004",
     item_nome: "Macarrão Espaguete 500g",
     quantidade: 30,
     unidade: "pacote",
@@ -602,7 +619,7 @@ const MOVIMENTACOES_MOCK_INICIAIS: Movimentacao[] = [
     id: "mov-15",
     data: "2026-07-06",
     tipo: "consumo",
-    item_id: "item-10",
+    item_id: "ITM-0010",
     item_nome: "Sabonete em Barra 90g",
     quantidade: 3,
     unidade: "un",
@@ -615,19 +632,20 @@ const MOVIMENTACOES_MOCK_INICIAIS: Movimentacao[] = [
     id: "mov-14",
     data: "2026-06-27",
     tipo: "distribuicao",
-    item_id: "item-01",
+    item_id: "ITM-0001",
     item_nome: "Arroz Agulhinha 5kg",
     quantidade: 6,
     unidade: "caixa",
     familia_nome: "Família Peixoto",
     familia_bairro: "Bairro São José",
+    bairro: "Bairro São José",
     responsavel: "Mariana Souza",
   },
   {
     id: "mov-13",
     data: "2026-06-20",
     tipo: "entrada",
-    item_id: "item-06",
+    item_id: "ITM-0006",
     item_nome: "Sardinha em Lata 125g",
     quantidade: 20,
     unidade: "un",
@@ -640,19 +658,20 @@ const MOVIMENTACOES_MOCK_INICIAIS: Movimentacao[] = [
     id: "mov-12",
     data: "2026-06-15",
     tipo: "distribuicao",
-    item_id: "item-06",
+    item_id: "ITM-0006",
     item_nome: "Sardinha em Lata 125g",
     quantidade: 12,
     unidade: "un",
     familia_nome: "Família Gonçalves",
     familia_bairro: "Morro da Paz",
+    bairro: "Morro da Paz",
     responsavel: "Assistente Ana Lúcia",
   },
   {
     id: "mov-11",
     data: "2026-06-10",
     tipo: "entrada",
-    item_id: "item-03",
+    item_id: "ITM-0003",
     item_nome: "Leite UHT Integral 1L",
     quantidade: 36,
     unidade: "un",
@@ -664,7 +683,7 @@ const MOVIMENTACOES_MOCK_INICIAIS: Movimentacao[] = [
     id: "mov-10",
     data: "2026-06-03",
     tipo: "perda",
-    item_id: "item-08",
+    item_id: "ITM-0008",
     item_nome: "Biscoito Maisena 400g",
     quantidade: 2,
     unidade: "pacote",
@@ -678,31 +697,33 @@ const MOVIMENTACOES_MOCK_INICIAIS: Movimentacao[] = [
     id: "mov-09",
     data: "2026-05-29",
     tipo: "distribuicao",
-    item_id: "item-03",
+    item_id: "ITM-0003",
     item_nome: "Leite UHT Integral 1L",
     quantidade: 20,
     unidade: "un",
     familia_nome: "Família Lima",
     familia_bairro: "Vila Nova",
+    bairro: "Vila Nova",
     responsavel: "Carlos Eduardo",
   },
   {
     id: "mov-08",
     data: "2026-05-25",
     tipo: "distribuicao",
-    item_id: "item-02",
+    item_id: "ITM-0002",
     item_nome: "Feijão Carioca Tipo 1",
     quantidade: 12,
     unidade: "kg",
     familia_nome: "Família Teixeira",
     familia_bairro: "Jardim Esperança",
+    bairro: "Jardim Esperança",
     responsavel: "Mariana Souza",
   },
   {
     id: "mov-07",
     data: "2026-05-20",
     tipo: "entrada",
-    item_id: "item-01",
+    item_id: "ITM-0001",
     item_nome: "Arroz Agulhinha 5kg",
     quantidade: 15,
     unidade: "caixa",
@@ -714,19 +735,20 @@ const MOVIMENTACOES_MOCK_INICIAIS: Movimentacao[] = [
     id: "mov-06",
     data: "2026-05-16",
     tipo: "distribuicao",
-    item_id: "item-16",
+    item_id: "ITM-0016",
     item_nome: "Agasalhos de Lã Juvenil",
     quantidade: 4,
     unidade: "un",
     familia_nome: "Família Silva Ramos",
     familia_bairro: "Bairro São José",
+    bairro: "Bairro São José",
     responsavel: "Assistente Ana Lúcia",
   },
   {
     id: "mov-05",
     data: "2026-05-12",
     tipo: "entrada",
-    item_id: "item-16",
+    item_id: "ITM-0016",
     item_nome: "Agasalhos de Lã Juvenil",
     quantidade: 8,
     unidade: "un",
@@ -737,7 +759,7 @@ const MOVIMENTACOES_MOCK_INICIAIS: Movimentacao[] = [
     id: "mov-04",
     data: "2026-05-08",
     tipo: "entrada",
-    item_id: "item-11",
+    item_id: "ITM-0011",
     item_nome: "Detergente Líquido Neutro 500ml",
     quantidade: 24,
     unidade: "un",
@@ -747,7 +769,7 @@ const MOVIMENTACOES_MOCK_INICIAIS: Movimentacao[] = [
     id: "mov-03",
     data: "2026-05-05",
     tipo: "consumo",
-    item_id: "item-11",
+    item_id: "ITM-0011",
     item_nome: "Detergente Líquido Neutro 500ml",
     quantidade: 1,
     unidade: "un",
@@ -757,19 +779,20 @@ const MOVIMENTACOES_MOCK_INICIAIS: Movimentacao[] = [
     id: "mov-02",
     data: "2026-05-03",
     tipo: "distribuicao",
-    item_id: "item-18",
+    item_id: "ITM-0018",
     item_nome: "Caixa de Lápis de Cor 12 Cores",
     quantidade: 5,
     unidade: "caixa",
     familia_nome: "Oficina de Pintura Infantil",
     familia_bairro: "Centro Comunitário",
+    bairro: "Centro Comunitário",
     responsavel: "Mariana Souza",
   },
   {
     id: "mov-01",
     data: "2026-05-01",
     tipo: "entrada",
-    item_id: "item-08",
+    item_id: "ITM-0008",
     item_nome: "Biscoito Maisena 400g",
     quantidade: 20,
     unidade: "pacote",
@@ -804,8 +827,29 @@ function obterWebhookUrl(tipo: "entrada" | "saida" | "novo_item"): string | unde
   return undefined;
 }
 
-const STORAGE_KEY_ITENS = "doamais_itens_v1";
-const STORAGE_KEY_MOVS = "doamais_movimentacoes_v1";
+const STORAGE_KEY_ITENS = "doamais_itens_v2";
+const STORAGE_KEY_MOVS = "doamais_movimentacoes_v2";
+
+export function normalizarIdItem(id: string): string {
+  const match = id?.match(/^item-(\d+)$/i);
+  if (match) {
+    return `ITM-${match[1].padStart(4, "0")}`;
+  }
+  return id || "ITM-0001";
+}
+
+export function gerarProximoIdItem(itens: Item[]): string {
+  let maiorNum = 0;
+  for (const it of itens) {
+    const match = it.id?.match(/^ITM-(\d+)$/i);
+    if (match) {
+      const num = parseInt(match[1], 10);
+      if (num > maiorNum) maiorNum = num;
+    }
+  }
+  const prox = maiorNum > 0 ? maiorNum + 1 : itens.length + 1;
+  return `ITM-${String(prox).padStart(4, "0")}`;
+}
 
 function carregarItensLocais(): Item[] {
   if (typeof window === "undefined") {
@@ -814,7 +858,22 @@ function carregarItensLocais(): Item[] {
   try {
     const salvo = localStorage.getItem(STORAGE_KEY_ITENS);
     if (salvo) {
-      return JSON.parse(salvo);
+      const parsed: Item[] = JSON.parse(salvo);
+      return parsed.map((it) => ({
+        ...it,
+        id: normalizarIdItem(it.id),
+      }));
+    }
+    // Migração de v1 para v2 se houver cache antigo
+    const salvoV1 = localStorage.getItem("doamais_itens_v1");
+    if (salvoV1) {
+      const parsedV1: Item[] = JSON.parse(salvoV1);
+      const migrados = parsedV1.map((it) => ({
+        ...it,
+        id: normalizarIdItem(it.id),
+      }));
+      localStorage.setItem(STORAGE_KEY_ITENS, JSON.stringify(migrados));
+      return migrados;
     }
   } catch (err) {
     console.warn("Erro ao ler itens do localStorage:", err);
@@ -839,7 +898,25 @@ function carregarMovsLocais(): Movimentacao[] {
   try {
     const salvo = localStorage.getItem(STORAGE_KEY_MOVS);
     if (salvo) {
-      return JSON.parse(salvo);
+      const parsed: Movimentacao[] = JSON.parse(salvo);
+      return parsed.map((m) => ({
+        ...m,
+        item_id: normalizarIdItem(m.item_id),
+        bairro: m.bairro || m.familia_bairro,
+        familia_bairro: m.familia_bairro || m.bairro,
+      }));
+    }
+    const salvoV1 = localStorage.getItem("doamais_movimentacoes_v1");
+    if (salvoV1) {
+      const parsedV1: Movimentacao[] = JSON.parse(salvoV1);
+      const migrados = parsedV1.map((m) => ({
+        ...m,
+        item_id: normalizarIdItem(m.item_id),
+        bairro: m.bairro || m.familia_bairro,
+        familia_bairro: m.familia_bairro || m.bairro,
+      }));
+      localStorage.setItem(STORAGE_KEY_MOVS, JSON.stringify(migrados));
+      return migrados;
     }
   } catch (err) {
     console.warn("Erro ao ler movimentações do localStorage:", err);
@@ -875,7 +952,6 @@ export async function getMovimentacoes(): Promise<Movimentacao[]> {
     }, 50);
   });
 }
-
 
 async function despacharWebhook(
   webhookUrl: string | undefined,
@@ -924,11 +1000,32 @@ async function despacharWebhook(
 }
 
 export async function enviarEntrada(
-  dados: Omit<EntradaPayload, "tipo_acao">
+  dados: {
+    item_id: string;
+    item_nome: string;
+    quantidade: number;
+    unidade: string;
+    doador_tipo: DoadorTipo;
+    doador_nome?: string;
+    doador_contato?: string;
+    validade_lote?: string;
+    observacao?: string;
+    data?: string;
+    categoria?: CategoriaItem;
+  }
 ): Promise<{ success: boolean; message?: string }> {
+  // Payload enviado ao Webhook no formato do Google Sheets (id e carimbo adicionados automaticamente no Sheets)
   const payload: EntradaPayload = {
     tipo_acao: "entrada",
-    ...dados,
+    item_id: dados.item_id,
+    item_nome: dados.item_nome,
+    quantidade: Number(dados.quantidade),
+    unidade: dados.unidade,
+    doador_tipo: dados.doador_tipo,
+    doador_nome: dados.doador_nome || "",
+    doador_contato: dados.doador_contato || "",
+    validade_lote: dados.validade_lote || "",
+    observacao: dados.observacao || "",
   };
 
   const webhookUrl = obterWebhookUrl("entrada");
@@ -952,8 +1049,8 @@ export async function enviarEntrada(
 
     const movs = carregarMovsLocais();
     const novaMov: Movimentacao = {
-      id: `mov-${Date.now()}`,
-      data: dados.data,
+      id: `ENT-${String(Date.now()).slice(-5)}`,
+      data: dados.data || new Date().toISOString().split("T")[0],
       tipo: "entrada",
       item_id: dados.item_id,
       item_nome: dados.item_nome,
@@ -972,7 +1069,20 @@ export async function enviarEntrada(
 }
 
 export async function enviarSaida(
-  dados: Omit<SaidaPayload, "tipo_acao">
+  dados: {
+    tipo: "distribuicao" | "consumo" | "perda";
+    item_id: string;
+    item_nome: string;
+    quantidade: number;
+    unidade: string;
+    familia_nome?: string;
+    bairro?: string;
+    familia_bairro?: string;
+    motivo_perda?: string;
+    responsavel: string;
+    observacao?: string;
+    data?: string;
+  }
 ): Promise<{ success: boolean; message?: string }> {
   const itens = carregarItensLocais();
   const itemAlvo = itens.find((it) => it.id === dados.item_id);
@@ -991,9 +1101,21 @@ export async function enviarSaida(
     };
   }
 
+  const nomeBairro = dados.bairro || dados.familia_bairro || "";
+
+  // Payload enviado ao Webhook no formato do Google Sheets (id e carimbo adicionados automaticamente no Sheets)
   const payload: SaidaPayload = {
     tipo_acao: "saida",
-    ...dados,
+    tipo: dados.tipo,
+    item_id: dados.item_id,
+    item_nome: dados.item_nome,
+    quantidade: Number(dados.quantidade),
+    unidade: dados.unidade,
+    familia_nome: dados.familia_nome || "",
+    bairro: nomeBairro,
+    motivo_perda: dados.motivo_perda || "",
+    responsavel: dados.responsavel,
+    observacao: dados.observacao || "",
   };
 
   const webhookUrl = obterWebhookUrl("saida");
@@ -1008,15 +1130,16 @@ export async function enviarSaida(
 
     const movs = carregarMovsLocais();
     const novaMov: Movimentacao = {
-      id: `mov-${Date.now()}`,
-      data: dados.data,
+      id: `SAI-${String(Date.now()).slice(-5)}`,
+      data: dados.data || new Date().toISOString().split("T")[0],
       tipo: dados.tipo,
       item_id: dados.item_id,
       item_nome: dados.item_nome,
       quantidade: Number(dados.quantidade),
       unidade: dados.unidade,
       familia_nome: dados.familia_nome,
-      familia_bairro: dados.familia_bairro,
+      familia_bairro: nomeBairro,
+      bairro: nomeBairro,
       motivo_perda: dados.motivo_perda,
       responsavel: dados.responsavel,
       observacao: dados.observacao,
@@ -1028,11 +1151,24 @@ export async function enviarSaida(
 }
 
 export async function criarItem(
-  dados: Omit<NovoItemPayload, "tipo_acao">
+  dados: {
+    item_nome: string;
+    categoria: CategoriaItem;
+    unidade: UnidadeItem | string;
+    controla_validade: boolean;
+    estoque_minimo: number;
+    saldo_inicial?: number;
+    validade_inicial?: string;
+  }
 ): Promise<{ success: boolean; item?: Item; message?: string }> {
+  // Payload enviado ao Webhook no formato do Google Sheets (o Sheets gera o ID ITM-xxxx automaticamente)
   const payload: NovoItemPayload = {
     tipo_acao: "novo_item",
-    ...dados,
+    item_nome: dados.item_nome,
+    categoria: dados.categoria,
+    unidade: dados.unidade,
+    controla_validade: Boolean(dados.controla_validade),
+    estoque_minimo: Number(dados.estoque_minimo),
   };
 
   const webhookUrl = obterWebhookUrl("novo_item");
@@ -1040,11 +1176,13 @@ export async function criarItem(
 
   if (resultado.success) {
     const itens = carregarItensLocais();
+    const novoId = gerarProximoIdItem(itens);
+
     const novoItem: Item = {
-      id: `item-${Date.now().toString(36)}`,
+      id: novoId,
       item_nome: dados.item_nome,
       categoria: dados.categoria,
-      unidade: dados.unidade,
+      unidade: dados.unidade as UnidadeItem,
       controla_validade: Boolean(dados.controla_validade),
       estoque_minimo: Number(dados.estoque_minimo),
       saldo_atual: Number(dados.saldo_inicial || 0),
@@ -1056,7 +1194,7 @@ export async function criarItem(
     if (dados.saldo_inicial && Number(dados.saldo_inicial) > 0) {
       const movs = carregarMovsLocais();
       const novaMov: Movimentacao = {
-        id: `mov-${Date.now()}`,
+        id: `ENT-${String(Date.now()).slice(-5)}`,
         data: new Date().toISOString().split("T")[0],
         tipo: "entrada",
         item_id: novoItem.id,
@@ -1086,6 +1224,8 @@ export async function criarItem(
 
 export function restaurarDadosIniciais(): void {
   if (typeof window !== "undefined") {
+    localStorage.removeItem("doamais_itens_v1");
+    localStorage.removeItem("doamais_movimentacoes_v1");
     localStorage.removeItem(STORAGE_KEY_ITENS);
     localStorage.removeItem(STORAGE_KEY_MOVS);
   }
