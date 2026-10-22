@@ -26,12 +26,10 @@ export function EstoquePage() {
   const [dataHoje, setDataHoje] = useState<Date>(new Date());
   const [loading, setLoading] = useState(true);
 
-  // Filtros
   const [busca, setBusca] = useState("");
   const [categoriaFiltro, setCategoriaFiltro] = useState<string>("todas");
   const [statusFiltro, setStatusFiltro] = useState<StatusFiltro>("todos");
 
-  // Modal Novo Produto
   const [modalNovoItemAberto, setModalNovoItemAberto] = useState(false);
 
   useEffect(() => {
@@ -49,9 +47,6 @@ export function EstoquePage() {
     }
   }
 
-  // Helper para verificar status de cada item
-  // REGRA DE STATUS:
-  // Vermelho (🔴 Vencendo <= 7 dias ou vencido) tem prioridade sobre Amarelo (🟡 Abaixo do mínimo).
   const avaliarStatusItem = (item: Item) => {
     const hoje = new Date(dataHoje);
     hoje.setHours(0, 0, 0, 0);
@@ -108,10 +103,8 @@ export function EstoquePage() {
     };
   };
 
-  // Filtragem dos itens
   const itensFiltrados = useMemo(() => {
     return itens.filter((item) => {
-      // Busca por nome
       if (busca.trim()) {
         const termo = busca.toLowerCase();
         const nomeMatch = item.item_nome.toLowerCase().includes(termo);
@@ -119,12 +112,10 @@ export function EstoquePage() {
         if (!nomeMatch && !catMatch) return false;
       }
 
-      // Filtro de categoria
       if (categoriaFiltro !== "todas" && item.categoria !== categoriaFiltro) {
         return false;
       }
 
-      // Filtro de status
       if (statusFiltro !== "todos") {
         const statusItem = avaliarStatusItem(item);
         if (statusFiltro === "ok" && statusItem.tipo !== "ok") return false;
@@ -138,7 +129,6 @@ export function EstoquePage() {
 
   return (
     <div className="space-y-6">
-      {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-stone-200">
         <div>
           <h2 className="text-2xl font-bold tracking-tight text-stone-900 flex items-center gap-2">
@@ -150,7 +140,6 @@ export function EstoquePage() {
           </p>
         </div>
 
-        {/* Botão Novo Produto */}
         <Button
           onClick={() => setModalNovoItemAberto(true)}
           className="bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-sm shadow-sm"
@@ -160,10 +149,8 @@ export function EstoquePage() {
         </Button>
       </div>
 
-      {/* FILTROS NO TOPO */}
       <Card className="doamais-card p-4">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-          {/* Busca por nome */}
           <div className="md:col-span-5 relative">
             <Search className="w-4 h-4 text-stone-400 absolute left-3 top-3 pointer-events-none" />
             <Input
@@ -174,7 +161,6 @@ export function EstoquePage() {
             />
           </div>
 
-          {/* Select de Categoria */}
           <div className="md:col-span-3">
             <Select
               value={categoriaFiltro}
@@ -190,7 +176,6 @@ export function EstoquePage() {
             </Select>
           </div>
 
-          {/* Select de Status */}
           <div className="md:col-span-4">
             <Select
               value={statusFiltro}
@@ -205,7 +190,6 @@ export function EstoquePage() {
           </div>
         </div>
 
-        {/* Resumo da Filtragem */}
         <div className="mt-3 pt-3 border-t border-stone-100 flex items-center justify-between text-xs text-stone-500">
           <span>
             Exibindo <strong>{itensFiltrados.length}</strong> de <strong>{itens.length}</strong> produtos
@@ -225,7 +209,6 @@ export function EstoquePage() {
         </div>
       </Card>
 
-      {/* TABELA DE ESTOQUE */}
       <Card className="doamais-card overflow-hidden">
         <CardContent className="p-0">
           <div className="overflow-x-auto">
@@ -263,7 +246,6 @@ export function EstoquePage() {
                         key={item.id}
                         className="hover:bg-stone-50/80 transition-colors"
                       >
-                        {/* Item */}
                         <td className="py-3 px-4">
                           <p className="font-bold text-stone-900 text-sm">
                             {item.item_nome}
@@ -273,14 +255,12 @@ export function EstoquePage() {
                           </span>
                         </td>
 
-                        {/* Categoria */}
                         <td className="py-3 px-4 whitespace-nowrap">
                           <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-stone-100 text-stone-700 font-medium text-xs">
                             {item.categoria}
                           </span>
                         </td>
 
-                        {/* Saldo Atual com destaque quando abaixo do mínimo */}
                         <td className="py-3 px-4 text-center whitespace-nowrap">
                           <div
                             className={`inline-flex flex-col items-center justify-center px-3 py-1 rounded-lg border font-bold text-sm ${
@@ -303,12 +283,10 @@ export function EstoquePage() {
                           </div>
                         </td>
 
-                        {/* Estoque Mínimo */}
                         <td className="py-3 px-4 text-center whitespace-nowrap text-stone-600 font-medium">
                           {item.estoque_minimo} {item.unidade}
                         </td>
 
-                        {/* Validade mais próxima */}
                         <td className="py-3 px-4 whitespace-nowrap text-stone-600">
                           {item.controla_validade && item.validade_mais_proxima ? (
                             <span className="font-medium text-stone-800">
@@ -319,7 +297,6 @@ export function EstoquePage() {
                           )}
                         </td>
 
-                        {/* Status */}
                         <td className="py-3 px-4 whitespace-nowrap">
                           <Badge
                             variant={status.variant}
@@ -330,7 +307,6 @@ export function EstoquePage() {
                           </Badge>
                         </td>
 
-                        {/* Botão Registrar Saída */}
                         <td className="py-3 px-4 text-right whitespace-nowrap">
                           <Link to={`/saida?item_id=${item.id}`}>
                             <Button
@@ -352,8 +328,7 @@ export function EstoquePage() {
           </div>
         </CardContent>
       </Card>
-
-      {/* Modal de Cadastro de Novo Produto */}
+      
       <NovoItemDialog
         open={modalNovoItemAberto}
         onOpenChange={setModalNovoItemAberto}

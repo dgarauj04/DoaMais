@@ -30,31 +30,25 @@ export function EntradaPage() {
   const [loadingItens, setLoadingItens] = useState(true);
   const [submetendo, setSubmetendo] = useState(false);
 
-  // Estados do Formulário
   const hojeStr = useMemo(() => new Date().toISOString().split("T")[0], []);
   const [data, setData] = useState(hojeStr);
   const [categoria, setCategoria] = useState<CategoriaItem>("Alimentos");
 
-  // Seleção ou criação inline de item
   const [modoNovoItemInline, setModoNovoItemInline] = useState(false);
   const [itemId, setItemId] = useState("");
   const [novoNome, setNovoNome] = useState("");
   const [novaUnidade, setNovaUnidade] = useState<UnidadeItem>("un");
   const [novoMinimo, setNovoMinimo] = useState("10");
 
-  // Quantidade e Validade
   const [quantidade, setQuantidade] = useState("");
   const [validade, setValidade] = useState("");
 
-  // Doador
   const [doadorTipo, setDoadorTipo] = useState<DoadorTipo>("Pessoa");
   const [doadorNome, setDoadorNome] = useState("");
   const [doadorContato, setDoadorContato] = useState("");
 
-  // Observações
   const [observacao, setObservacao] = useState("");
 
-  // Erros de validação
   const [erros, setErros] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -75,22 +69,18 @@ export function EntradaPage() {
     }
   }
 
-  // Itens filtrados pela categoria selecionada
   const itensDaCategoria = useMemo(() => {
     return itens.filter((i) => i.categoria === categoria);
   }, [itens, categoria]);
 
-  // Item atualmente selecionado
   const itemSelecionado = useMemo(() => {
     return itens.find((i) => i.id === itemId);
   }, [itens, itemId]);
 
-  // Unidade efetiva (herdada do item selecionado ou do item inline)
   const unidadeEfetiva = modoNovoItemInline
     ? novaUnidade
     : itemSelecionado?.unidade || "un";
 
-  // Quando mudar categoria: se o item selecionado não pertencer à nova categoria, atualiza seleção
   const handleCategoriaChange = (novaCat: CategoriaItem) => {
     setCategoria(novaCat);
     if (!modoNovoItemInline) {
@@ -175,7 +165,6 @@ export function EntradaPage() {
         finalUnidade = resNovo.item.unidade;
       }
 
-      // Envia a entrada
       const resEntrada = await enviarEntrada({
         data,
         item_id: finalItemId,
@@ -199,7 +188,6 @@ export function EntradaPage() {
         `Entrada de ${quantidade} ${finalUnidade} de "${finalItemNome}" foi lançada no estoque.`
       );
 
-      // Limpar formulário
       setQuantidade("");
       setValidade("");
       setDoadorNome("");
@@ -221,7 +209,6 @@ export function EntradaPage() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      {/* Top Header */}
       <div className="pb-2 border-b border-stone-200">
         <h2 className="text-2xl font-bold tracking-tight text-stone-900 flex items-center gap-2">
           <ArrowDownLeft className="w-6 h-6 text-emerald-700" />
@@ -232,7 +219,6 @@ export function EntradaPage() {
         </p>
       </div>
 
-      {/* FORMULÁRIO EM CARD ÚNICO (MÁXIMO 2 COLUNAS) */}
       <Card className="doamais-card shadow-sm border-stone-200">
         <CardHeader className="bg-stone-50/60 border-b border-stone-100 p-6 pb-4">
           <CardTitle className="text-base font-bold text-stone-900 flex items-center gap-2">
@@ -247,7 +233,6 @@ export function EntradaPage() {
         <CardContent className="p-6">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              {/* Data (default: hoje) */}
               <div>
                 <Label required>Data da Entrada</Label>
                 <Input
@@ -258,7 +243,6 @@ export function EntradaPage() {
                 />
               </div>
 
-              {/* Categoria */}
               <div>
                 <Label required>Categoria do Produto</Label>
                 <Select
@@ -275,7 +259,6 @@ export function EntradaPage() {
                 </Select>
               </div>
 
-              {/* Item com busca OU inline novo item */}
               <div className="md:col-span-2 space-y-2">
                 <div className="flex items-center justify-between">
                   <Label required>
@@ -406,7 +389,6 @@ export function EntradaPage() {
                 </div>
               )}
 
-              {/* Tipo de Doador: Radio Pessoa / Empresa / Anônimo */}
               <div className="md:col-span-2 pt-2 border-t border-stone-100">
                 <Label required>Tipo de Doador</Label>
                 <div className="grid grid-cols-3 gap-3">
@@ -448,7 +430,6 @@ export function EntradaPage() {
                 </div>
               </div>
 
-              {/* Nome do Doador */}
               {doadorTipo !== "Anônimo" && (
                 <div>
                   <Label required>
@@ -469,7 +450,6 @@ export function EntradaPage() {
                 </div>
               )}
 
-              {/* Contato do Doador */}
               <div className={doadorTipo === "Anônimo" ? "md:col-span-2" : ""}>
                 <Label>Contato do Doador (opcional)</Label>
                 <Input
@@ -480,7 +460,6 @@ export function EntradaPage() {
                 />
               </div>
 
-              {/* Observação */}
               <div className="md:col-span-2">
                 <Label>Observação / Finalidade</Label>
                 <textarea
@@ -493,7 +472,6 @@ export function EntradaPage() {
               </div>
             </div>
 
-            {/* Botões de Ação */}
             <div className="pt-4 border-t border-stone-100 flex items-center justify-end gap-3">
               <Button
                 type="submit"

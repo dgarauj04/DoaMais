@@ -27,25 +27,20 @@ export function SaidaPage() {
   const [loadingItens, setLoadingItens] = useState(true);
   const [submetendo, setSubmetendo] = useState(false);
 
-  // Estados do formulário
   const hojeStr = useMemo(() => new Date().toISOString().split("T")[0], []);
   const [data, setData] = useState(hojeStr);
   const [tipoSaida, setTipoSaida] = useState<TipoSaida>("distribuicao");
   const [itemId, setItemId] = useState("");
   const [quantidade, setQuantidade] = useState("");
 
-  // Campos específicos de Distribuição
   const [familiaNome, setFamiliaNome] = useState("");
   const [familiaBairro, setFamiliaBairro] = useState("");
 
-  // Campos específicos de Perda
   const [motivoPerda, setMotivoPerda] = useState("Vencimento");
 
-  // Responsável e Observação
   const [responsavel, setResponsavel] = useState("");
   const [observacao, setObservacao] = useState("");
 
-  // Validação
   const [erros, setErros] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -55,7 +50,6 @@ export function SaidaPage() {
         const dados = await getItens();
         setItens(dados);
 
-        // Se houver item_id na URL, seleciona
         if (preSelectedItemId && dados.some((i) => i.id === preSelectedItemId)) {
           setItemId(preSelectedItemId);
         } else if (dados.length > 0) {
@@ -72,7 +66,6 @@ export function SaidaPage() {
     return itens.find((i) => i.id === itemId);
   }, [itens, itemId]);
 
-  // Lista de sugestões de famílias frequentes para autocomplete amigável
   const sugestoesFamilias = [
     "Família Santos",
     "Família Oliveira",
@@ -95,7 +88,6 @@ export function SaidaPage() {
     "Comunidade Estrela",
   ];
 
-  // Validação em tempo real da quantidade em relação ao saldo atual
   const saldoDisponivel = itemSelecionado?.saldo_atual ?? 0;
   const qtdNumero = Number(quantidade);
   const saldoInsuficiente =
@@ -170,13 +162,11 @@ export function SaidaPage() {
         `Baixa de ${quantidade} ${itemSelecionado.unidade} de "${itemSelecionado.item_nome}" realizada com sucesso.`
       );
 
-      // Limpar formulário
       setQuantidade("");
       setFamiliaNome("");
       setFamiliaBairro("");
       setObservacao("");
 
-      // Atualiza lista de itens para refletir novo saldo
       const dadosAtualizados = await getItens();
       setItens(dadosAtualizados);
     } catch (err: unknown) {
@@ -191,7 +181,6 @@ export function SaidaPage() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      {/* Header */}
       <div className="pb-2 border-b border-stone-200">
         <h2 className="text-2xl font-bold tracking-tight text-stone-900 flex items-center gap-2">
           <ArrowUpRight className="w-6 h-6 text-amber-700" />
@@ -215,11 +204,9 @@ export function SaidaPage() {
 
         <CardContent className="p-6">
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* 1. SELEÇÃO DO TIPO DE SAÍDA: 3 CARDS SELECIONÁVEIS COM ÍCONE */}
             <div>
               <Label required>Tipo de Saída</Label>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                {/* Opção 1: Distribuição */}
                 <div
                   onClick={() => setTipoSaida("distribuicao")}
                   className={`flex flex-col p-4 rounded-xl border cursor-pointer transition-all ${
@@ -245,7 +232,6 @@ export function SaidaPage() {
                   </p>
                 </div>
 
-                {/* Opção 2: Consumo Interno */}
                 <div
                   onClick={() => setTipoSaida("consumo")}
                   className={`flex flex-col p-4 rounded-xl border cursor-pointer transition-all ${
@@ -271,7 +257,6 @@ export function SaidaPage() {
                   </p>
                 </div>
 
-                {/* Opção 3: Perda */}
                 <div
                   onClick={() => setTipoSaida("perda")}
                   className={`flex flex-col p-4 rounded-xl border cursor-pointer transition-all ${
@@ -299,9 +284,7 @@ export function SaidaPage() {
               </div>
             </div>
 
-            {/* 2. GRID PRINCIPAL DE DADOS */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-2 border-t border-stone-100">
-              {/* Data da Saída */}
               <div>
                 <Label required>Data da Saída</Label>
                 <Input
@@ -312,7 +295,6 @@ export function SaidaPage() {
                 />
               </div>
 
-              {/* Item: Select com busca mostrando "nome — saldo atual unidade" */}
               <div>
                 <Label required>Item a retirar</Label>
                 <Select
@@ -347,7 +329,6 @@ export function SaidaPage() {
                 )}
               </div>
 
-              {/* Quantidade a retirar */}
               <div>
                 <Label required>Quantidade da Saída</Label>
                 <div className="relative">
@@ -372,7 +353,6 @@ export function SaidaPage() {
                   )}
                 </div>
 
-                {/* Aviso inline de saldo insuficiente */}
                 {saldoInsuficiente && (
                   <div className="mt-2 p-2.5 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-2">
                     <AlertTriangle className="w-4 h-4 shrink-0 text-red-600" />
@@ -385,7 +365,6 @@ export function SaidaPage() {
                 )}
               </div>
 
-              {/* Responsável pela Saída */}
               <div>
                 <Label required>Responsável pela Operação</Label>
                 <Input
@@ -396,7 +375,6 @@ export function SaidaPage() {
                 />
               </div>
 
-              {/* CAMPOS CONDICIONAIS: SE TIPO = DISTRIBUIÇÃO */}
               {tipoSaida === "distribuicao" && (
                 <>
                   <div>
@@ -433,7 +411,6 @@ export function SaidaPage() {
                 </>
               )}
 
-              {/* CAMPOS CONDICIONAIS: SE TIPO = PERDA */}
               {tipoSaida === "perda" && (
                 <div className="md:col-span-2">
                   <Label required>Motivo da Perda</Label>
@@ -449,7 +426,6 @@ export function SaidaPage() {
                 </div>
               )}
 
-              {/* Observação / Destino ou finalidade */}
               <div className="md:col-span-2">
                 <Label>Observação / Destino ou Finalidade</Label>
                 <textarea
@@ -468,7 +444,6 @@ export function SaidaPage() {
               </div>
             </div>
 
-            {/* BOTÃO DE SUBMISSÃO */}
             <div className="pt-4 border-t border-stone-100 flex items-center justify-end gap-3">
               <Button
                 type="submit"

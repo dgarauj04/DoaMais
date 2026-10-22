@@ -22,13 +22,11 @@ export function HistoricoPage() {
   const [movimentacoes, setMovimentacoes] = useState<Movimentacao[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Filtros
   const [busca, setBusca] = useState("");
   const [tipoFiltro, setTipoFiltro] = useState<string>("todos");
   const [dataInicio, setDataInicio] = useState("");
   const [dataFim, setDataFim] = useState("");
 
-  // Ordenação
   const [colunaOrdenacao, setColunaOrdenacao] = useState<OrdenacaoColuna>("data");
   const [direcaoOrdenacao, setDirecaoOrdenacao] = useState<DirecaoOrdenacao>("desc");
 
@@ -54,25 +52,20 @@ export function HistoricoPage() {
     }
   };
 
-  // Filtragem e Ordenação
   const movimentacoesProcessadas = useMemo(() => {
     const filtradas = movimentacoes.filter((m) => {
-      // Tipo de movimentação
       if (tipoFiltro !== "todos" && m.tipo !== tipoFiltro) {
         return false;
       }
 
-      // Período: data início
       if (dataInicio && m.data < dataInicio) {
         return false;
       }
 
-      // Período: data fim
       if (dataFim && m.data > dataFim) {
         return false;
       }
 
-      // Busca por item, doador, família ou responsável
       if (busca.trim()) {
         const termo = busca.toLowerCase();
         const itemMatch = m.item_nome.toLowerCase().includes(termo);
@@ -97,7 +90,6 @@ export function HistoricoPage() {
       return true;
     });
 
-    // Ordenação
     return filtradas.sort((a, b) => {
       let resultado = 0;
       if (colunaOrdenacao === "data") {
@@ -127,7 +119,6 @@ export function HistoricoPage() {
 
   return (
     <div className="space-y-6">
-      {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-stone-200">
         <div>
           <h2 className="text-2xl font-bold tracking-tight text-stone-900 flex items-center gap-2">
@@ -144,10 +135,8 @@ export function HistoricoPage() {
         </div>
       </div>
 
-      {/* FILTROS */}
       <Card className="doamais-card p-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 items-end">
-          {/* Busca por item ou doador/família */}
           <div className="lg:col-span-4 relative">
             <label className="block text-[11px] font-bold text-stone-600 uppercase mb-1">
               Buscar
@@ -163,7 +152,6 @@ export function HistoricoPage() {
             </div>
           </div>
 
-          {/* Tipo de movimentação */}
           <div className="lg:col-span-3">
             <label className="block text-[11px] font-bold text-stone-600 uppercase mb-1">
               Tipo de Operação
@@ -181,7 +169,6 @@ export function HistoricoPage() {
             </Select>
           </div>
 
-          {/* Data Início */}
           <div className="lg:col-span-2">
             <label className="block text-[11px] font-bold text-stone-600 uppercase mb-1">
               Data Início
@@ -194,7 +181,6 @@ export function HistoricoPage() {
             />
           </div>
 
-          {/* Data Fim */}
           <div className="lg:col-span-2">
             <label className="block text-[11px] font-bold text-stone-600 uppercase mb-1">
               Data Fim
@@ -207,7 +193,6 @@ export function HistoricoPage() {
             />
           </div>
 
-          {/* Botão Limpar */}
           <div className="lg:col-span-1">
             <Button
               variant="outline"
@@ -222,14 +207,12 @@ export function HistoricoPage() {
         </div>
       </Card>
 
-      {/* TABELA COMPLETA */}
       <Card className="doamais-card overflow-hidden">
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead className="bg-stone-100/80 border-b border-stone-200 text-stone-700 font-semibold uppercase tracking-wider text-[11px]">
                 <tr>
-                  {/* Coluna Data ordenável */}
                   <th
                     className="py-3 px-4 cursor-pointer hover:bg-stone-200/60 transition-colors select-none"
                     onClick={() => alternarOrdenacao("data")}
@@ -251,7 +234,6 @@ export function HistoricoPage() {
                   <th className="py-3 px-4">Tipo</th>
                   <th className="py-3 px-4">Item</th>
 
-                  {/* Coluna Quantidade ordenável */}
                   <th
                     className="py-3 px-4 text-right cursor-pointer hover:bg-stone-200/60 transition-colors select-none"
                     onClick={() => alternarOrdenacao("quantidade")}
@@ -320,19 +302,16 @@ export function HistoricoPage() {
                         key={mov.id}
                         className="hover:bg-stone-50/80 transition-colors"
                       >
-                        {/* Data */}
                         <td className="py-3 px-4 whitespace-nowrap font-medium text-stone-600">
                           {formatarData(mov.data)}
                         </td>
 
-                        {/* Tipo com badge colorida */}
                         <td className="py-3 px-4 whitespace-nowrap">
                           <Badge variant={badgeConfig.variant} className="font-semibold">
                             {badgeConfig.label}
                           </Badge>
                         </td>
 
-                        {/* Item */}
                         <td className="py-3 px-4 font-bold text-stone-900">
                           {mov.item_nome}
                           {mov.validade_lote && (
@@ -342,7 +321,6 @@ export function HistoricoPage() {
                           )}
                         </td>
 
-                        {/* Quantidade */}
                         <td className="py-3 px-4 text-right whitespace-nowrap font-bold text-stone-900">
                           {mov.quantidade}{" "}
                           <span className="font-normal text-stone-500 text-[11px]">
@@ -350,7 +328,6 @@ export function HistoricoPage() {
                           </span>
                         </td>
 
-                        {/* Origem / Destino */}
                         <td
                           className="py-3 px-4 max-w-[200px] truncate text-stone-700"
                           title={origemDestino}
@@ -358,12 +335,10 @@ export function HistoricoPage() {
                           {origemDestino}
                         </td>
 
-                        {/* Responsável */}
                         <td className="py-3 px-4 whitespace-nowrap text-stone-600">
                           {mov.responsavel || "—"}
                         </td>
 
-                        {/* Observação truncada com tooltip / hover */}
                         <td className="py-3 px-4 max-w-[220px]">
                           {mov.observacao ? (
                             <div

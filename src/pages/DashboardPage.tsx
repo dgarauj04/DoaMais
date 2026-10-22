@@ -55,7 +55,6 @@ export function DashboardPage() {
     carregarDados();
   }, []);
 
-  // Helper para cálculo de dias até a validade
   const calcularValidadeInfo = (dataValidade: string | null) => {
     if (!dataValidade) return null;
     const refDate = new Date(dataHoje);
@@ -70,23 +69,19 @@ export function DashboardPage() {
     };
   };
 
-  // KPIs
   const kpis = useMemo(() => {
     const totalItensDistintos = itens.length;
 
-    // Itens vencendo em até 7 dias ou já vencidos
     const itensVencendo = itens.filter((item) => {
       if (!item.controla_validade || !item.validade_mais_proxima) return false;
       const info = calcularValidadeInfo(item.validade_mais_proxima);
       return info && (info.vencido || info.venceEmBreve);
     });
 
-    // Itens abaixo do estoque mínimo
     const itensAbaixoMinimo = itens.filter(
       (item) => item.saldo_atual < item.estoque_minimo
     );
 
-    // Total de unidades distribuídas no mês atual
     const ref = new Date(dataHoje);
     const anoAtual = ref.getFullYear();
     const mesAtual = ref.getMonth() + 1;
@@ -105,7 +100,6 @@ export function DashboardPage() {
     };
   }, [itens, movimentacoes, dataHoje]);
 
-  // Lista de Alertas de Validade (<= 7 dias ou vencidos)
   const alertasValidade = useMemo(() => {
     return itens
       .filter((item) => {
@@ -124,7 +118,6 @@ export function DashboardPage() {
       .sort((a, b) => a.dias - b.dias);
   }, [itens, dataHoje]);
 
-  // Gráfico: Entradas vs Distribuição vs Perdas por mês (últimos 6 meses)
   const dadosGrafico = useMemo(() => {
     const meses: { chave: string; label: string }[] = [];
     const nomesMeses = [
@@ -164,7 +157,6 @@ export function DashboardPage() {
     });
   }, [movimentacoes, dataHoje]);
 
-  // 8 últimas movimentações
   const ultimasMovimentacoes = useMemo(() => {
     return [...movimentacoes]
       .sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime() || b.id.localeCompare(a.id))
@@ -182,7 +174,6 @@ export function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      {/* Top Banner de Boas-vindas e Contexto */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-stone-200">
         <div>
           <h2 className="text-2xl font-bold tracking-tight text-stone-900">
@@ -199,9 +190,7 @@ export function DashboardPage() {
         </div>
       </div>
 
-      {/* 1. LINHA DE 4 CARDS KPI */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Card 1: Itens em estoque */}
         <Card className="doamais-card kpi-card kpi-default">
           <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between space-y-0">
             <span className="text-xs font-semibold uppercase tracking-wider text-stone-500">
@@ -221,7 +210,6 @@ export function DashboardPage() {
           </CardContent>
         </Card>
 
-        {/* Card 2: Vencendo em 7 dias (Borda e texto vermelho) */}
         <Card
           className={`doamais-card kpi-card kpi-danger ${
             kpis.vencendoCount > 0
@@ -249,7 +237,6 @@ export function DashboardPage() {
           </CardContent>
         </Card>
 
-        {/* Card 3: Abaixo do mínimo (Âmbar) */}
         <Card
           className={`doamais-card kpi-card kpi-warning ${
             kpis.abaixoMinimoCount > 0
@@ -275,7 +262,6 @@ export function DashboardPage() {
           </CardContent>
         </Card>
 
-        {/* Card 4: Distribuído no mês */}
         <Card className="doamais-card kpi-card kpi-info">
           <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between space-y-0">
             <span className="text-xs font-semibold uppercase tracking-wider text-stone-500">
@@ -296,9 +282,7 @@ export function DashboardPage() {
         </Card>
       </div>
 
-      {/* 2. SEÇÃO CENTRAL: GRÁFICO + PAINEL LATERAL DE VALIDADE */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Gráfico de Barras Agrupadas (2 colunas) */}
         <Card className="lg:col-span-2 doamais-card flex flex-col justify-between">
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
@@ -384,7 +368,6 @@ export function DashboardPage() {
           </CardContent>
         </Card>
 
-        {/* 3. PAINEL LATERAL: ALERTAS DE VALIDADE */}
         <Card className="doamais-card flex flex-col">
           <CardHeader className="pb-3 border-b border-stone-100">
             <div className="flex items-center justify-between">
@@ -459,7 +442,6 @@ export function DashboardPage() {
         </Card>
       </div>
 
-      {/* 4. TABELA DE ÚLTIMAS MOVIMENTAÇÕES (8 mais recentes) */}
       <Card className="doamais-card overflow-hidden">
         <CardHeader className="pb-3 border-b border-stone-200/80 bg-stone-50/50">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
