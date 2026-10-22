@@ -169,13 +169,13 @@ erDiagram
 
 ## ⚙️ Fluxo de automação no Make (Super-Fluxo "DoaMais")
 
-Cenário único em versão híbrida: o Next.js faz a validação básica e o Make faz a **dupla checagem** e as automações.
+Cenário único em versão híbrida: o React faz a validação básica e o Make faz a **dupla checagem** e as automações.
 
 ![Fluxo DoaMais](/public/doamais-make.gif)
 
 ### Módulo 1 — Custom Webhook
 
-Ponto de entrada. Recebe o JSON enviado pelo formulário do Next.js (que já valida, por exemplo, que a saída não excede o saldo disponível).
+Ponto de entrada. Recebe o JSON enviado pelo formulário do React (que já valida, por exemplo, que a saída não excede o saldo disponível).
 
 ### Módulo 2 — Router
 
@@ -186,7 +186,7 @@ Divide o fluxo conforme a variável `tipo_acao`.
 | Módulo                             | Função                                                                                                                                         |
 | ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
 | **3A · Google Sheets (Add a Row)** | Grava os dados na aba `Entradas`.                                                                                                              |
-| **4A · Webhook Response**          | Responde `200 OK` ao Next.js com `status`, `id_movimentacao`, `item_nome` e `quantidade`.                                                      |
+| **4A · Webhook Response**          | Responde `200 OK` ao React com `status`, `id_movimentacao`, `item_nome` e `quantidade`.                                                      |
 | **5A · Router (sub-rota)**         | O Make continua em background. Filtro: `doador_tipo` ≠ Anônimo **e** `doador_contato` contém `@`.                                              |
 | **6A · Gmail (Send an Email)**     | Envia o e-mail de agradecimento ("Olá [Doador_Nome], o DoaMais agradece..."). Com tratamento de erro para o fluxo não parar se o Gmail falhar. |
 
@@ -195,9 +195,9 @@ Divide o fluxo conforme a variável `tipo_acao`.
 | Módulo                               | Função                                                                                                                  |
 | ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------- |
 | **3B · Google Sheets (Search Rows)** | Confirma na aba `Estoque` se o saldo ainda é suficiente (dupla checagem para operações simultâneas).                    |
-| **4B · Router (condicional)**        | Se `quantidade > Saldo_Atual`: devolve **erro 400** ao Next.js e **para o fluxo sem gravar nada**. Se válida: continua. |
+| **4B · Router (condicional)**        | Se `quantidade > Saldo_Atual`: devolve **erro 400** ao React e **para o fluxo sem gravar nada**. Se válida: continua. |
 | **5B · Google Sheets (Add a Row)**   | Registra a saída na aba `Saidas`.                                                                                       |
-| **6B · Webhook Response**            | Responde `200 OK` ao Next.js.                                                                                           |
+| **6B · Webhook Response**            | Responde `200 OK` ao React.js.                                                                                           |
 | **7B · Google Sheets (Search Rows)** | Lê o novo `Saldo_Atual` na aba `Estoque`.                                                                               |
 | **8B · Router (alerta)**             | Filtro: `Saldo_Atual <= Estoque_Minimo`.                                                                                |
 | **9B · Gmail (Send an Email)**       | Dispara o alerta de nível crítico para o coordenador da ONG.                                                            |
@@ -207,7 +207,7 @@ Divide o fluxo conforme a variável `tipo_acao`.
 | Módulo                               | Função                                                                             |
 | ------------------------------------ | ---------------------------------------------------------------------------------- |
 | **3C · Google Sheets (Search Rows)** | Procura se o produto já existe na aba `Estoque` (unicidade pelo nome).             |
-| **4C · Router (condicional)**        | Se já existe: devolve **erro 409 (Conflito)** ao Next.js. Se não existe: continua. |
+| **4C · Router (condicional)**        | Se já existe: devolve **erro 409 (Conflito)** ao React. Se não existe: continua. |
 | **5C · Google Sheets (Add a Row)**   | Registra o novo item em `Estoque`, gerando ID único e mantendo as fórmulas.        |
 | **6C · Webhook Response**            | Responde `200 OK` com o ID do novo produto.                                        |
 
@@ -271,7 +271,7 @@ Construa uma aplicação web chamada "DoaMais" — sistema de controle de doaç�
   - Por enquanto, `getItens()` e `getMovimentacoes()` retornam dados de exemplo (mock) realistas em português do Brasil.
   - `enviarEntrada`, `enviarSaida` e `criarItem` devem fazer `fetch POST` em JSON para URLs lidas de variáveis de ambiente (`VITE_WEBHOOK_ENTRADA`, `VITE_WEBHOOK_SAIDA`, `VITE_WEBHOOK_NOVO_ITEM`). O JSON deve sempre incluir uma chave `"tipo_acao"` (valores: "entrada", "saida", "novo_item"). Se as variáveis de ambiente não existirem, simule sucesso após 800ms (para demonstração).
 - Deixe as variáveis de ambiente documentadas em comentário no topo de `lib/data.ts`.
-- O Next.js atua como o principal validador (ex: impedindo saídas maiores que o saldo), mas deve estar preparado para tratar erros devolvidos pelo Webhook.
+- O React atua como o principal validador (ex: impedindo saídas maiores que o saldo), mas deve estar preparado para tratar erros devolvidos pelo Webhook.
 - A UI NUNCA calcula saldo: ela consome o campo `saldo_atual` que já vem pronto da fonte de dados.
 
 ## Modelo de dados (tipos TypeScript)
@@ -425,7 +425,7 @@ VITE_WEBHOOK_NOVO_ITEM=https://hook.us2.make.com/SEU_ID_DO_WEBHOOK
 
 - [x] O problema está claro
 - [x] É possível entender quem utiliza a solução
-- [x] Interface funcional (Next.js)
+- [x] Interface funcional (React)
 - [x] Formulários de entrada e saída funcionando
 - [x] Dados armazenados em banco (Google Sheets)
 - [x] Workflow principal funcionando (Make: entrada, saída e novo item)
