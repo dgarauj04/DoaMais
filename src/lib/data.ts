@@ -779,7 +779,7 @@ const MOVIMENTACOES_MOCK_INICIAIS: Movimentacao[] = [
   },
 ];
 
-/function obterWebhookUrl(tipo: "entrada" | "saida" | "novo_item"): string | undefined {
+function obterWebhookUrl(tipo: "entrada" | "saida" | "novo_item"): string | undefined {
   if (typeof import.meta !== "undefined" && import.meta.env) {
     if (tipo === "entrada") {
       return (
