@@ -3,7 +3,6 @@ export type CategoriaItem =
   | "Higiene"
   | "Roupa"
   | "Material Escolar"
-  | "Eletrônicos"
   | "Outro";
 
 export type UnidadeItem = "kg" | "L" | "un" | "caixa" | "pacote";
@@ -20,16 +19,16 @@ export interface Item {
   controla_validade: boolean;
   estoque_minimo: number;
   saldo_atual: number;
-  validade_mais_proxima: string | null;
+  validade_mais_proxima: string | null; // ISO YYYY-MM-DD
 }
 
 export interface Movimentacao {
   id: string;
-  data: string;
+  data: string; // ISO YYYY-MM-DD
   tipo: TipoMovimentacao;
   item_id: string;
   item_nome: string;
-  quantidade: number;
+  quantidade: number; // sempre positiva
   unidade: string;
   doador_tipo?: DoadorTipo;
   doador_nome?: string;
@@ -84,7 +83,7 @@ export interface NovoItemPayload {
 }
 
 // ----------------------------------------------------------------------------
-// DADOS INICIAIS (MOCK) — Baseados na data corrente de Outubro/2026
+// DADOS INICIAIS (MOCK) — Baseados na data corrente
 // ----------------------------------------------------------------------------
 const ITENS_MOCK_INICIAIS: Item[] = [
   {
@@ -115,7 +114,7 @@ const ITENS_MOCK_INICIAIS: Item[] = [
     controla_validade: true,
     estoque_minimo: 24,
     saldo_atual: 48,
-    validade_mais_proxima: "2026-10-19", // Vence em 4 dias
+    validade_mais_proxima: "2026-10-24", // Vence em 4 dias
   },
   {
     id: "item-04",
@@ -155,7 +154,7 @@ const ITENS_MOCK_INICIAIS: Item[] = [
     controla_validade: true,
     estoque_minimo: 8,
     saldo_atual: 2, // Abaixo do mínimo E vencendo em breve!
-    validade_mais_proxima: "2026-10-17", // Vence em 2 dias
+    validade_mais_proxima: "2026-10-22", // Vence em 2 dias
   },
   {
     id: "item-08",
@@ -165,7 +164,7 @@ const ITENS_MOCK_INICIAIS: Item[] = [
     controla_validade: true,
     estoque_minimo: 10,
     saldo_atual: 14,
-    validade_mais_proxima: "2026-10-21", // Vence em 6 dias
+    validade_mais_proxima: "2026-10-26", // Vence em 6 dias
   },
   {
     id: "item-09",
@@ -175,7 +174,7 @@ const ITENS_MOCK_INICIAIS: Item[] = [
     controla_validade: true,
     estoque_minimo: 10,
     saldo_atual: 6,
-    validade_mais_proxima: "2026-10-11", // Vencido há 4 dias!
+    validade_mais_proxima: "2026-10-16", // Vencido há 4 dias!
   },
   {
     id: "item-10",
@@ -270,10 +269,10 @@ const ITENS_MOCK_INICIAIS: Item[] = [
 ];
 
 const MOVIMENTACOES_MOCK_INICIAIS: Movimentacao[] = [
-  // Outubro / 2026
+  // Mês atual
   {
     id: "mov-41",
-    data: "2026-10-15",
+    data: "2026-10-20",
     tipo: "distribuicao",
     item_id: "item-01",
     item_nome: "Arroz Agulhinha 5kg",
@@ -286,7 +285,7 @@ const MOVIMENTACOES_MOCK_INICIAIS: Movimentacao[] = [
   },
   {
     id: "mov-40",
-    data: "2026-10-14",
+    data: "2026-10-18",
     tipo: "entrada",
     item_id: "item-03",
     item_nome: "Leite UHT Integral 1L",
@@ -295,12 +294,12 @@ const MOVIMENTACOES_MOCK_INICIAIS: Movimentacao[] = [
     doador_tipo: "Empresa",
     doador_nome: "Laticínios Vale Verde",
     doador_contato: "contato@valeverde.com.br",
-    validade_lote: "2026-10-19",
+    validade_lote: "2026-10-24",
     observacao: "Doação com validade curta recebida para distribuição rápida",
   },
   {
     id: "mov-39",
-    data: "2026-10-13",
+    data: "2026-10-15",
     tipo: "distribuicao",
     item_id: "item-02",
     item_nome: "Feijão Carioca Tipo 1",
@@ -313,7 +312,7 @@ const MOVIMENTACOES_MOCK_INICIAIS: Movimentacao[] = [
   },
   {
     id: "mov-38",
-    data: "2026-10-12",
+    data: "2026-10-14",
     tipo: "perda",
     item_id: "item-09",
     item_nome: "Iogurte Natural 170g",
@@ -780,7 +779,31 @@ const MOVIMENTACOES_MOCK_INICIAIS: Movimentacao[] = [
   },
 ];
 
-// Helper para persistência local na sessão do navegador
+/function obterWebhookUrl(tipo: "entrada" | "saida" | "novo_item"): string | undefined {
+  if (typeof import.meta !== "undefined" && import.meta.env) {
+    if (tipo === "entrada") {
+      return (
+        import.meta.env.VITE_WEBHOOK_ENTRADA ||
+        import.meta.env.VITE_WEBHOOK_URL
+      );
+    }
+    if (tipo === "saida") {
+      return (
+        import.meta.env.VITE_WEBHOOK_SAIDA ||
+        import.meta.env.VITE_WEBHOOK_URL
+      );
+    }
+    if (tipo === "novo_item") {
+      return (
+        import.meta.env.VITE_WEBHOOK_NOVO_ITEM ||
+        import.meta.env.VITE_WEBHOOK_URL
+      );
+    }
+  }
+
+  return undefined;
+}
+
 const STORAGE_KEY_ITENS = "doamais_itens_v1";
 const STORAGE_KEY_MOVS = "doamais_movimentacoes_v1";
 
@@ -837,13 +860,7 @@ function salvarMovsLocais(movs: Movimentacao[]): void {
 // ----------------------------------------------------------------------------
 // FUNÇÕES PRINCIPAIS DE ACESSO A DADOS
 // ----------------------------------------------------------------------------
-
-/**
- * Retorna a lista de itens com seus respectivos saldos atuais.
- * IMPORTANTE: O saldo_atual já vem pronto da fonte de dados (a UI nunca o calcula).
- */
 export async function getItens(): Promise<Item[]> {
-  // Simula pequena latência de leitura para experiência natural
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve(carregarItensLocais());
@@ -851,9 +868,6 @@ export async function getItens(): Promise<Item[]> {
   });
 }
 
-/**
- * Retorna o histórico de movimentações (entradas, distribuições, consumos e perdas).
- */
 export async function getMovimentacoes(): Promise<Movimentacao[]> {
   return new Promise((resolve) => {
     setTimeout(() => {
@@ -862,15 +876,11 @@ export async function getMovimentacoes(): Promise<Movimentacao[]> {
   });
 }
 
-/**
- * Helper interno para despachar requisições para o Webhook configurado.
- * Se a URL não existir nas variáveis de ambiente, simula sucesso após 800ms.
- */
+
 async function despacharWebhook(
   webhookUrl: string | undefined,
   corpo: Record<string, unknown>
 ): Promise<{ success: boolean; message?: string }> {
-  // Se a URL não estiver definida ou estiver vazia, simula sucesso com delay de 800ms
   if (!webhookUrl || webhookUrl.trim() === "") {
     await new Promise((resolve) => setTimeout(resolve, 800));
     return {
@@ -913,10 +923,6 @@ async function despacharWebhook(
   }
 }
 
-/**
- * Envia uma nova entrada de doação.
- * Realiza fetch POST com corpo JSON incluindo `tipo_acao: "entrada"`.
- */
 export async function enviarEntrada(
   dados: Omit<EntradaPayload, "tipo_acao">
 ): Promise<{ success: boolean; message?: string }> {
@@ -925,14 +931,10 @@ export async function enviarEntrada(
     ...dados,
   };
 
-  const webhookUrl =
-    process.env.NEXT_PUBLIC_WEBHOOK_ENTRADA ||
-    process.env.NEXT_PUBLIC_WEBHOOK_URL;
-
+  const webhookUrl = obterWebhookUrl("entrada");
   const resultado = await despacharWebhook(webhookUrl, payload as unknown as Record<string, unknown>);
 
   if (resultado.success) {
-    // Atualiza o estado da sessão local
     const itens = carregarItensLocais();
     const itemAlvo = itens.find((it) => it.id === dados.item_id);
     if (itemAlvo) {
@@ -969,14 +971,9 @@ export async function enviarEntrada(
   return resultado;
 }
 
-/**
- * Envia uma saída (distribuição, consumo ou perda).
- * Realiza fetch POST com corpo JSON incluindo `tipo_acao: "saida"`.
- */
 export async function enviarSaida(
   dados: Omit<SaidaPayload, "tipo_acao">
 ): Promise<{ success: boolean; message?: string }> {
-  // Validação primária de segurança no front
   const itens = carregarItensLocais();
   const itemAlvo = itens.find((it) => it.id === dados.item_id);
 
@@ -999,14 +996,10 @@ export async function enviarSaida(
     ...dados,
   };
 
-  const webhookUrl =
-    process.env.NEXT_PUBLIC_WEBHOOK_SAIDA ||
-    process.env.NEXT_PUBLIC_WEBHOOK_URL;
-
+  const webhookUrl = obterWebhookUrl("saida");
   const resultado = await despacharWebhook(webhookUrl, payload as unknown as Record<string, unknown>);
 
   if (resultado.success) {
-    // Deduz do saldo local da sessão
     itemAlvo.saldo_atual = Math.max(
       0,
       itemAlvo.saldo_atual - Number(dados.quantidade)
@@ -1034,10 +1027,6 @@ export async function enviarSaida(
   return resultado;
 }
 
-/**
- * Cadastra um novo produto/item no estoque.
- * Realiza fetch POST com corpo JSON incluindo `tipo_acao: "novo_item"`.
- */
 export async function criarItem(
   dados: Omit<NovoItemPayload, "tipo_acao">
 ): Promise<{ success: boolean; item?: Item; message?: string }> {
@@ -1046,10 +1035,7 @@ export async function criarItem(
     ...dados,
   };
 
-  const webhookUrl =
-    process.env.NEXT_PUBLIC_WEBHOOK_NOVO_ITEM ||
-    process.env.NEXT_PUBLIC_WEBHOOK_URL;
-
+  const webhookUrl = obterWebhookUrl("novo_item");
   const resultado = await despacharWebhook(webhookUrl, payload as unknown as Record<string, unknown>);
 
   if (resultado.success) {
@@ -1098,9 +1084,6 @@ export async function criarItem(
   };
 }
 
-/**
- * Helper para redefinir dados para os mocks originais (útil para testes da equipe).
- */
 export function restaurarDadosIniciais(): void {
   if (typeof window !== "undefined") {
     localStorage.removeItem(STORAGE_KEY_ITENS);

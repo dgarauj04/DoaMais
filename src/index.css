@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@import "../styles/custom.scss";
+@import "./styles/custom.scss";
 
 :root {
   --background: #fafaf9; /* stone-50 */
@@ -29,6 +29,7 @@
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-feature-settings: "rlig" 1, "calt" 1;
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
   min-height: 100vh;
 }

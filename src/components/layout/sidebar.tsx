@@ -1,8 +1,5 @@
-"use client";
-
 import React, { useState } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { Link, useLocation } from "react-router-dom";
 import {
   Heart,
   LayoutDashboard,
@@ -22,7 +19,7 @@ interface SidebarProps {
 }
 
 export function Sidebar({ className }: SidebarProps) {
-  const pathname = usePathname();
+  const { pathname } = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const navItems = [
@@ -64,7 +61,6 @@ export function Sidebar({ className }: SidebarProps) {
 
   return (
     <>
-      {/* Mobile Trigger Button in Header Bar */}
       <button
         onClick={() => setMobileOpen(true)}
         className="md:hidden fixed top-3.5 left-4 z-40 p-2 text-stone-700 bg-white border border-stone-200 rounded-lg shadow-xs hover:bg-stone-50"
@@ -73,7 +69,6 @@ export function Sidebar({ className }: SidebarProps) {
         <Menu className="w-5 h-5" />
       </button>
 
-      {/* Backdrop for Mobile */}
       {mobileOpen && (
         <div
           className="md:hidden fixed inset-0 z-40 bg-black/40 backdrop-blur-xs transition-opacity"
@@ -81,7 +76,6 @@ export function Sidebar({ className }: SidebarProps) {
         />
       )}
 
-      {/* Sidebar Content (Desktop fixed, Mobile off-canvas) */}
       <aside
         className={cn(
           "fixed top-0 bottom-0 left-0 z-40 w-64 bg-white border-r border-stone-200 flex flex-col justify-between transition-transform duration-200 ease-in-out md:translate-x-0 shadow-xs",
@@ -90,20 +84,11 @@ export function Sidebar({ className }: SidebarProps) {
         )}
       >
         <div className="flex flex-col flex-1 overflow-y-auto">
-          {/* Logo & Org Badge */}
           <div className="p-6 pb-4 border-b border-stone-100 flex items-center justify-between">
-            <Link href="/" onClick={closeMobile} className="flex items-center gap-3 group">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-700 to-emerald-900 text-white flex items-center justify-center shadow-md shadow-emerald-700/20 group-hover:scale-105 transition-transform">
-                <Heart className="w-5 h-5 fill-white/90 text-white" />
-              </div>
-              <div>
-                <span className="text-xl font-black tracking-tight text-emerald-950 flex items-center gap-1">
-                  Doa<span className="text-emerald-700">Mais</span>
-                </span>
-                <span className="block text-[11px] font-medium text-stone-600 tracking-tight">
-                  Ação Social Comunitária
-                </span>
-              </div>
+            <Link to="/" onClick={closeMobile} className="flex items-center gap-3 group">
+              <div className="logo">
+                <img src="../../assets/img/Logo-DoaMais.png" alt="" />
+                </div>
             </Link>
 
             <button
@@ -114,7 +99,6 @@ export function Sidebar({ className }: SidebarProps) {
             </button>
           </div>
 
-          {/* Navigation Links */}
           <nav className="p-4 space-y-6">
             <div>
               <p className="px-3 text-[11px] font-bold text-stone-600 uppercase tracking-wider mb-2">
@@ -127,7 +111,7 @@ export function Sidebar({ className }: SidebarProps) {
                   return (
                     <Link
                       key={item.href}
-                      href={item.href}
+                      to={item.href}
                       onClick={closeMobile}
                       className={cn(
                         "flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition-colors",
@@ -149,7 +133,6 @@ export function Sidebar({ className }: SidebarProps) {
               </div>
             </div>
 
-            {/* Grupo Registrar */}
             <div>
               <p className="px-3 text-[11px] font-bold text-stone-600 uppercase tracking-wider mb-2">
                 Registrar Movimento
@@ -161,7 +144,7 @@ export function Sidebar({ className }: SidebarProps) {
                   return (
                     <Link
                       key={item.href}
-                      href={item.href}
+                      to={item.href}
                       onClick={closeMobile}
                       className={cn(
                         "flex items-center justify-between px-3.5 py-2.5 rounded-lg text-sm font-medium transition-all border",
@@ -197,7 +180,6 @@ export function Sidebar({ className }: SidebarProps) {
           </nav>
         </div>
 
-        {/* Planilha & Status de Integração */}
         <div className="p-4 border-t border-stone-100 bg-stone-50/70">
           <div className="p-3 bg-white border border-stone-200 rounded-xl shadow-2xs">
             <div className="flex items-center justify-between text-xs font-semibold text-stone-800">

@@ -1,7 +1,5 @@
-"use client";
-
 import React, { useState } from "react";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import { ArrowDownLeft, ArrowUpRight, PlusCircle, RotateCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { NovoItemDialog } from "@/components/common/novo-item-dialog";
@@ -23,7 +21,6 @@ export function Header() {
   return (
     <>
       <header className="sticky top-0 z-30 h-16 bg-white/95 backdrop-blur-md border-b border-stone-200 px-4 sm:px-8 flex items-center justify-between">
-        {/* Left spacing for mobile menu button or breadcrumb */}
         <div className="flex items-center gap-3 pl-12 md:pl-0">
           <div className="hidden sm:block">
             <h1 className="text-sm font-semibold text-stone-900 tracking-tight">
@@ -38,19 +35,16 @@ export function Header() {
           </span>
         </div>
 
-        {/* Action Buttons: Visible on all pages */}
         <div className="flex items-center gap-2 sm:gap-3">
-          {/* Quick reset button for demo */}
           <button
             onClick={handleResetDemo}
             title="Redefinir dados para o exemplo original"
-            className="hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-stone-600 hover:text-stone-900 hover:bg-stone-100 rounded-lg border border-stone-200 transition-colors"
+            className="hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-stone-600 hover:text-stone-900 hover:bg-stone-100 rounded-lg border border-stone-200 transition-colors cursor-pointer"
           >
             <RotateCw className="w-3.5 h-3.5" />
             <span>Reset Demo</span>
           </button>
 
-          {/* Quick Novo Produto */}
           <Button
             variant="outline"
             size="sm"
@@ -61,8 +55,7 @@ export function Header() {
             <span>Novo Produto</span>
           </Button>
 
-          {/* Botão Ação Rápida: Nova Entrada */}
-          <Link href="/entrada">
+          <Link to="/entrada">
             <Button
               size="sm"
               className="bg-emerald-700 hover:bg-emerald-800 text-white shadow-xs font-semibold text-xs sm:text-sm px-3 sm:px-4"
@@ -72,8 +65,7 @@ export function Header() {
             </Button>
           </Link>
 
-          {/* Botão Ação Rápida: Nova Saída */}
-          <Link href="/saida">
+          <Link to="/saida">
             <Button
               variant="outline"
               size="sm"
@@ -86,7 +78,6 @@ export function Header() {
         </div>
       </header>
 
-      {/* Modal de cadastro de novo produto quando acionado pelo header */}
       <NovoItemDialog
         open={openNovoItem}
         onOpenChange={setOpenNovoItem}

@@ -1,7 +1,5 @@
-"use client";
-
-import React, { useEffect, useState, useMemo, Suspense } from "react";
-import Link from "next/link";
+import React, { useEffect, useState, useMemo } from "react";
+import { Link } from "react-router-dom";
 import {
   Search,
   PlusCircle,
@@ -23,9 +21,9 @@ import { formatarData } from "@/lib/utils";
 
 type StatusFiltro = "todos" | "ok" | "minimo" | "validade";
 
-function EstoqueContent() {
+export function EstoquePage() {
   const [itens, setItens] = useState<Item[]>([]);
-  const [dataHoje, setDataHoje] = useState<Date | null>(null);
+  const [dataHoje, setDataHoje] = useState<Date>(new Date());
   const [loading, setLoading] = useState(true);
 
   // Filtros
@@ -55,7 +53,7 @@ function EstoqueContent() {
   // REGRA DE STATUS:
   // Vermelho (🔴 Vencendo <= 7 dias ou vencido) tem prioridade sobre Amarelo (🟡 Abaixo do mínimo).
   const avaliarStatusItem = (item: Item) => {
-    const hoje = dataHoje ? new Date(dataHoje) : new Date("2026-10-15T00:00:00");
+    const hoje = new Date(dataHoje);
     hoje.setHours(0, 0, 0, 0);
 
     let ehCriticoValidade = false;
@@ -321,7 +319,7 @@ function EstoqueContent() {
                           )}
                         </td>
 
-                        {/* Status (Badge colorida: vermelho tem prioridade sobre amarelo) */}
+                        {/* Status */}
                         <td className="py-3 px-4 whitespace-nowrap">
                           <Badge
                             variant={status.variant}
@@ -334,7 +332,7 @@ function EstoqueContent() {
 
                         {/* Botão Registrar Saída */}
                         <td className="py-3 px-4 text-right whitespace-nowrap">
-                          <Link href={`/saida?item_id=${item.id}`}>
+                          <Link to={`/saida?item_id=${item.id}`}>
                             <Button
                               variant="outline"
                               size="sm"
@@ -367,16 +365,4 @@ function EstoqueContent() {
   );
 }
 
-export default function EstoquePage() {
-  return (
-    <Suspense
-      fallback={
-        <div className="flex items-center justify-center min-h-[40vh] text-stone-500">
-          Carregando controle de estoque...
-        </div>
-      }
-    >
-      <EstoqueContent />
-    </Suspense>
-  );
-}
+export default EstoquePage;

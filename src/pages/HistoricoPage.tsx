@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useEffect, useState, useMemo } from "react";
 import {
   History,
@@ -7,23 +5,20 @@ import {
   ArrowUpDown,
   ArrowUp,
   ArrowDown,
-  Calendar,
-  Filter,
   Info,
-  Download,
 } from "lucide-react";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { getMovimentacoes, Movimentacao, TipoMovimentacao } from "@/lib/data";
+import { getMovimentacoes, Movimentacao } from "@/lib/data";
 import { formatarData } from "@/lib/utils";
 
 type OrdenacaoColuna = "data" | "quantidade";
 type DirecaoOrdenacao = "asc" | "desc";
 
-export default function HistoricoPage() {
+export function HistoricoPage() {
   const [movimentacoes, setMovimentacoes] = useState<Movimentacao[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -218,7 +213,7 @@ export default function HistoricoPage() {
               variant="outline"
               size="sm"
               onClick={limparFiltros}
-              className="w-full h-10 text-xs text-stone-600 hover:text-stone-900"
+              className="w-full h-10 text-xs text-stone-600 hover:text-stone-900 cursor-pointer"
               title="Limpar todos os filtros"
             >
               Limpar
@@ -396,3 +391,5 @@ export default function HistoricoPage() {
     </div>
   );
 }
+
+export default HistoricoPage;

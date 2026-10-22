@@ -54,8 +54,8 @@ Um sistema simples de inventário e controle de recursos que registra entradas e
 
 | Recurso | Link |
 |---|---|
-| 🌐 **MVP (aplicação publicada)** | `COLE_AQUI_O_LINK_DO_DEPLOY` |
-| 💻 **Repositório** | `COLE_AQUI_O_LINK_DO_REPOSITORIO` |
+| 🌐 **MVP (aplicação publicada)** | `https://doamais.vercel.app/` |
+| 💻 **Repositório** | `https://github.com/dgarauj04/DoaMais` |
 | 📊 **Banco de dados (Google Sheets)** | [Abrir planilha](https://docs.google.com/spreadsheets/d/1BmMa4MgyXv-l6y_cs6ea2Yt26jmnoZALvQDdaLf5ON0/edit?usp=sharing) |
 | ⚙️ **Automação (Make)** | Cenário "DoaMais" — endpoint configurado via variável de ambiente (veja [Como executar](#-como-executar-o-projeto)) |
 
@@ -65,14 +65,14 @@ Um sistema simples de inventário e controle de recursos que registra entradas e
 
 | Camada | Tecnologia |
 |---|---|
-| **Interface** | Next.js (App Router) + React + TypeScript |
+| **Interface** | Vite + React + TypeScript |
 | **Estilo** | Tailwind CSS + SCSS + shadcn/ui · fonte Inter · ícones lucide-react |
-| **Gráficos** | Recharts |
+| **Gráficos** | Recharts (gráfico de barras agrupadas responsivo) |
 | **Banco de dados** | Google Sheets (3 abas, saldo calculado por fórmulas `SOMASE`) |
 | **Automação / integração** | Make (Custom Webhook, Router, Google Sheets, Gmail) |
 | **Apoio de IA** | Prompt estruturado para gerar a primeira versão da interface |
 
-> A aplicação **não possui backend próprio, autenticação nem banco local**. O Next.js conversa com o Make por webhook, e o Make lê e grava na planilha.
+> A aplicação **não possui backend próprio, autenticação nem banco local**. O React conversa com o Make por webhook, e o Make lê e grava na planilha.
 
 ---
 
@@ -270,11 +270,11 @@ O prompt abaixo foi usado para gerar a primeira versão da aplicação, que depo
 Construa uma aplicação web chamada "DoaMais" — sistema de controle de doações e estoque para uma organização social comunitária. Ela substitui um caderno de anotações: registra entradas de doações, saídas (distribuição, consumo e perdas), mantém o saldo de estoque e exibe um painel de acompanhamento.
 
 ## Stack e regras técnicas
-- Next.js (App Router) + React + TypeScript + Tailwind + SCSS + componentes shadcn/ui. Gráficos com Recharts.
+- Vite + React + TypeScript + Tailwind + SCSS + componentes shadcn/ui. Gráficos com Recharts.
 - NÃO crie backend próprio, autenticação, banco de dados ou multiusuário. Não use Prisma nem qualquer banco local.
 - Crie uma camada de dados isolada em `lib/data.ts` com as funções: `getItens()`, `getMovimentacoes()`, `enviarEntrada(dados)`, `enviarSaida(dados)`, `criarItem(dados)`.
   - Por enquanto, `getItens()` e `getMovimentacoes()` retornam dados de exemplo (mock) realistas em português do Brasil.
-  - `enviarEntrada`, `enviarSaida` e `criarItem` devem fazer `fetch POST` em JSON para URLs lidas de variáveis de ambiente (`NEXT_PUBLIC_WEBHOOK_ENTRADA`, `NEXT_PUBLIC_WEBHOOK_SAIDA`, `NEXT_PUBLIC_WEBHOOK_NOVO_ITEM`). O JSON deve sempre incluir uma chave `"tipo_acao"` (valores: "entrada", "saida", "novo_item"). Se as variáveis de ambiente não existirem, simule sucesso após 800ms (para demonstração).
+  - `enviarEntrada`, `enviarSaida` e `criarItem` devem fazer `fetch POST` em JSON para URLs lidas de variáveis de ambiente (`VITE_WEBHOOK_ENTRADA`, `VITE_WEBHOOK_SAIDA`, `VITE_WEBHOOK_NOVO_ITEM`). O JSON deve sempre incluir uma chave `"tipo_acao"` (valores: "entrada", "saida", "novo_item"). Se as variáveis de ambiente não existirem, simule sucesso após 800ms (para demonstração).
 - Deixe as variáveis de ambiente documentadas em comentário no topo de `lib/data.ts`.
 - O Next.js atua como o principal validador (ex: impedindo saídas maiores que o saldo), mas deve estar preparado para tratar erros devolvidos pelo Webhook.
 - A UI NUNCA calcula saldo: ela consome o campo `saldo_atual` que já vem pronto da fonte de dados.
@@ -346,7 +346,42 @@ Google Sheets: <URL_DA_PLANILHA>
 
 </details>
 
-> 💡 **Uso responsável da IA:** a IA foi usada como apoio para estruturar a interface e a arquitetura. A lógica, os testes, as integrações com o Make e a planilha foram revisados e validados pela equipe.
+> 💡 **Uso responsável da IA:** a IA foi usada como apoio para estruturar a interface e a arquitetura. A lógica, os testes, as integrações com o Make e a planilha foram feitos, revisados e validados por mim.
+
+---
+
+## 📁 Estrutura do Projeto
+
+```
+doamais/
+├── index.html                   # Ponto de entrada HTML do Vite
+├── vite.config.ts               # Configuração do Vite, Tailwind v4 e Aliases
+├── tsconfig.json                # Configuração TypeScript
+├── package.json                 # Dependências e scripts
+├── .env.local                   # Configuração das URLs de Webhook
+├── src/
+│   ├── main.tsx                 # Inicialização do React 19
+│   ├── App.tsx                  # Shell da aplicação e rotas (React Router)
+│   ├── index.css                # Tailwind CSS v4 e variáveis de tema
+│   ├── styles/
+│   │   └── custom.scss          # SCSS customizado com animações e KPIs
+│   ├── pages/
+│   │   ├── DashboardPage.tsx    # Painel de acompanhamento (KPIs + Gráfico)
+│   │   ├── EstoquePage.tsx      # Tabela de estoque e filtros
+│   │   ├── HistoricoPage.tsx    # Auditoria de movimentações ordenável
+│   │   ├── EntradaPage.tsx      # Formulário de entrada de doação
+│   │   └── SaidaPage.tsx        # Formulário de saída com validação
+│   ├── components/
+│   │   ├── layout/
+│   │   │   ├── sidebar.tsx      # Menu lateral fixo / hambúrguer mobile
+│   │   │   └── header.tsx       # Ações rápidas superiores
+│   │   ├── ui/                  # Componentes reutilizáveis (Card, Button, Badge, etc.)
+│   │   └── common/
+│   │       └── novo-item-dialog.tsx # Modal de novo produto
+│   └── lib/
+│       ├── data.ts              # Camada de dados, mocks e integração Webhook
+│       └── utils.ts             # Formatadores e utilitários
+```
 
 ---
 
@@ -361,7 +396,7 @@ Google Sheets: <URL_DA_PLANILHA>
 
 ```bash
 # 1. Clone o repositório
-git clone COLE_AQUI_O_LINK_DO_REPOSITORIO
+git clone https://github.com/dgarauj04/DoaMais.git
 cd doamais
 
 # 2. Instale as dependências
@@ -379,9 +414,9 @@ Acesse `http://localhost:3000`.
 ### Variáveis de ambiente (`.env.local`)
 
 ```env
-NEXT_PUBLIC_WEBHOOK_ENTRADA=https://hook.us2.make.com/SEU_ID_DO_WEBHOOK
-NEXT_PUBLIC_WEBHOOK_SAIDA=https://hook.us2.make.com/SEU_ID_DO_WEBHOOK
-NEXT_PUBLIC_WEBHOOK_NOVO_ITEM=https://hook.us2.make.com/SEU_ID_DO_WEBHOOK
+VITE_WEBHOOK_ENTRADA=https://hook.us2.make.com/SEU_ID_DO_WEBHOOK
+VITE_WEBHOOK_SAIDA=https://hook.us2.make.com/SEU_ID_DO_WEBHOOK
+VITE_WEBHOOK_NOVO_ITEM=https://hook.us2.make.com/SEU_ID_DO_WEBHOOK
 ```
 
 > Como o Make usa **um único webhook** com Router por `tipo_acao`, as três variáveis podem apontar para a mesma URL.
@@ -409,7 +444,7 @@ NEXT_PUBLIC_WEBHOOK_NOVO_ITEM=https://hook.us2.make.com/SEU_ID_DO_WEBHOOK
 
 | Nome | Papel |
 |---|---|
-| **Douglas Araujo** —  Dev Fullstack/Engenheiro de Software | Desenvolvimento, engenheiro de prompt, automação e design |
+| **[Douglas Araujo](https://github.com/dgarauj04)** — Dev Fullstack/Engenheiro de Software | Desenvolvimento, engenheiro de prompt, automação e design |
 
 ---
 

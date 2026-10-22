@@ -1,7 +1,5 @@
-"use client";
-
-import React, { useEffect, useState, useMemo, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import React, { useEffect, useState, useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
 import {
   ArrowUpRight,
   HeartHandshake,
@@ -9,9 +7,6 @@ import {
   AlertOctagon,
   CheckCircle,
   AlertTriangle,
-  UserCheck,
-  Building,
-  MapPin,
   FileText,
 } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -23,8 +18,8 @@ import { getItens, enviarSaida, Item } from "@/lib/data";
 
 type TipoSaida = "distribuicao" | "consumo" | "perda";
 
-function FormularioSaida() {
-  const searchParams = useSearchParams();
+export function SaidaPage() {
+  const [searchParams] = useSearchParams();
   const preSelectedItemId = searchParams.get("item_id");
   const { success, error: toastError } = useToast();
 
@@ -33,7 +28,8 @@ function FormularioSaida() {
   const [submetendo, setSubmetendo] = useState(false);
 
   // Estados do formulário
-  const [data, setData] = useState("2026-10-15");
+  const hojeStr = useMemo(() => new Date().toISOString().split("T")[0], []);
+  const [data, setData] = useState(hojeStr);
   const [tipoSaida, setTipoSaida] = useState<TipoSaida>("distribuicao");
   const [itemId, setItemId] = useState("");
   const [quantidade, setQuantidade] = useState("");
@@ -53,7 +49,6 @@ function FormularioSaida() {
   const [erros, setErros] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    setData(new Date().toISOString().split("T")[0]);
     async function carregar() {
       setLoadingItens(true);
       try {
@@ -480,7 +475,7 @@ function FormularioSaida() {
                 variant="amber"
                 isLoading={submetendo}
                 disabled={saldoInsuficiente || !itemSelecionado || itemSelecionado.saldo_atual <= 0}
-                className="font-bold px-8 shadow-sm"
+                className="font-bold px-8 shadow-sm cursor-pointer"
               >
                 <CheckCircle className="w-4 h-4 text-amber-200" />
                 <span>Confirmar Saída</span>
@@ -493,16 +488,4 @@ function FormularioSaida() {
   );
 }
 
-export default function SaidaPage() {
-  return (
-    <Suspense
-      fallback={
-        <div className="flex items-center justify-center min-h-[40vh] text-stone-500">
-          Carregando formulário de saída...
-        </div>
-      }
-    >
-      <FormularioSaida />
-    </Suspense>
-  );
-}
+export default SaidaPage;

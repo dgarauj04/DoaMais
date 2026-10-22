@@ -1,6 +1,4 @@
-"use client";
-
-import React, { useEffect, useState, useMemo, Suspense } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import {
   ArrowDownLeft,
   HeartHandshake,
@@ -25,7 +23,7 @@ import {
   DoadorTipo,
 } from "@/lib/data";
 
-function EntradaContent() {
+export function EntradaPage() {
   const { success, error: toastError } = useToast();
 
   const [itens, setItens] = useState<Item[]>([]);
@@ -33,7 +31,8 @@ function EntradaContent() {
   const [submetendo, setSubmetendo] = useState(false);
 
   // Estados do Formulário
-  const [data, setData] = useState("2026-10-15");
+  const hojeStr = useMemo(() => new Date().toISOString().split("T")[0], []);
+  const [data, setData] = useState(hojeStr);
   const [categoria, setCategoria] = useState<CategoriaItem>("Alimentos");
 
   // Seleção ou criação inline de item
@@ -59,9 +58,6 @@ function EntradaContent() {
   const [erros, setErros] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    // Definir data de hoje no cliente
-    const hoje = new Date().toISOString().split("T")[0];
-    setData(hoje);
     carregarItens();
   }, []);
 
@@ -294,7 +290,7 @@ function EntradaContent() {
                     <span>
                       {modoNovoItemInline
                         ? "← Selecionar produto existente"
-                        : "Cadastrar novo item"}
+                        : "+ Cadastrar novo item"}
                     </span>
                   </button>
                 </div>
@@ -316,7 +312,7 @@ function EntradaContent() {
                     </Select>
                     {itensDaCategoria.length === 0 && !loadingItens && (
                       <p className="text-xs text-amber-700 mt-1">
-                        Nenhum produto cadastrado nesta categoria. Clique em "Cadastrar novo item" acima.
+                        Nenhum produto cadastrado nesta categoria. Clique em "+ Cadastrar novo item" acima.
                       </p>
                     )}
                   </div>
@@ -387,7 +383,7 @@ function EntradaContent() {
                 </p>
               </div>
 
-              {/* Validade — O campo validade SÓ aparece quando categoria = "Alimentos" */}
+              {/* Validade */}
               {categoria === "Alimentos" ? (
                 <div>
                   <Label>Validade (opcional)</Label>
@@ -452,7 +448,7 @@ function EntradaContent() {
                 </div>
               </div>
 
-              {/* Nome do Doador: Se Anônimo, OCULTA o campo nome */}
+              {/* Nome do Doador */}
               {doadorTipo !== "Anônimo" && (
                 <div>
                   <Label required>
@@ -516,16 +512,4 @@ function EntradaContent() {
   );
 }
 
-export default function EntradaPage() {
-  return (
-    <Suspense
-      fallback={
-        <div className="flex items-center justify-center min-h-[40vh] text-stone-500">
-          Carregando formulário de entrada...
-        </div>
-      }
-    >
-      <EntradaContent />
-    </Suspense>
-  );
-}
+export default EntradaPage;

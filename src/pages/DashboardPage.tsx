@@ -1,7 +1,5 @@
-"use client";
-
-import React, { useEffect, useState, useMemo, Suspense } from "react";
-import Link from "next/link";
+import React, { useEffect, useState, useMemo } from "react";
+import { Link } from "react-router-dom";
 import {
   Boxes,
   AlertCircle,
@@ -34,10 +32,10 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-function DashboardContent() {
+export function DashboardPage() {
   const [itens, setItens] = useState<Item[]>([]);
   const [movimentacoes, setMovimentacoes] = useState<Movimentacao[]>([]);
-  const [dataHoje, setDataHoje] = useState<Date | null>(null);
+  const [dataHoje, setDataHoje] = useState<Date>(new Date());
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -60,7 +58,7 @@ function DashboardContent() {
   // Helper para cálculo de dias até a validade
   const calcularValidadeInfo = (dataValidade: string | null) => {
     if (!dataValidade) return null;
-    const refDate = dataHoje ? new Date(dataHoje) : new Date("2026-10-15T00:00:00");
+    const refDate = new Date(dataHoje);
     refDate.setHours(0, 0, 0, 0);
     const dataAlvo = new Date(dataValidade + "T00:00:00");
     const diffMs = dataAlvo.getTime() - refDate.getTime();
@@ -89,7 +87,7 @@ function DashboardContent() {
     );
 
     // Total de unidades distribuídas no mês atual
-    const ref = dataHoje ? new Date(dataHoje) : new Date("2026-10-15T00:00:00");
+    const ref = new Date(dataHoje);
     const anoAtual = ref.getFullYear();
     const mesAtual = ref.getMonth() + 1;
     const mesStr = String(mesAtual).padStart(2, "0");
@@ -134,7 +132,7 @@ function DashboardContent() {
       "Jul", "Ago", "Set", "Out", "Nov", "Dez"
     ];
 
-    const dataRef = dataHoje ? new Date(dataHoje) : new Date("2026-10-15T00:00:00");
+    const dataRef = new Date(dataHoje);
     for (let i = 5; i >= 0; i--) {
       const d = new Date(dataRef.getFullYear(), dataRef.getMonth() - i, 1);
       const chave = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
@@ -473,7 +471,7 @@ function DashboardContent() {
                 Os 8 registros mais recentes de entradas, distribuições, consumo ou perdas
               </p>
             </div>
-            <Link href="/historico">
+            <Link to="/historico">
               <Button variant="ghost" size="sm" className="text-emerald-700 hover:text-emerald-800 gap-1 text-xs">
                 <span>Ver histórico completo</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -554,17 +552,4 @@ function DashboardContent() {
   );
 }
 
-export default function DashboardPage() {
-  return (
-    <Suspense
-      fallback={
-        <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3 text-stone-500">
-          <div className="w-8 h-8 border-3 border-emerald-700 border-t-transparent rounded-full animate-spin" />
-          <p className="text-sm font-medium">Carregando painel de acompanhamento...</p>
-        </div>
-      }
-    >
-      <DashboardContent />
-    </Suspense>
-  );
-}
+export default DashboardPage;
