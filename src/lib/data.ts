@@ -32,18 +32,18 @@ export interface Item {
   controla_validade: boolean;
   estoque_minimo: number;
   saldo_atual: number;
-  validade_mais_proxima: string | null; // ISO YYYY-MM-DD
+  validade_mais_proxima: string | null;
   total_entradas?: number;
   total_saidas?: number;
 }
 
 export interface Movimentacao {
-  id: string; // Gerado automaticamente pelo Sheets / Webhook
-  data: string; // ISO YYYY-MM-DD
+  id: string;
+  data: string;
   tipo: TipoMovimentacao;
-  item_id: string; // Código do item gerado no Sheets (ex: "ITM-0001")
+  item_id: string;
   item_nome: string;
-  quantidade: number; // sempre positiva
+  quantidade: number;
   unidade: string;
   doador_tipo?: DoadorTipo;
   doador_nome?: string;
@@ -68,7 +68,6 @@ export interface EntradaPayload {
   doador_contato?: string;
   validade_lote?: string;
   observacao?: string;
-  // Campos opcionais de compatibilidade
   data?: string;
   categoria?: CategoriaItem;
 }
@@ -85,7 +84,6 @@ export interface SaidaPayload {
   motivo_perda?: string;
   responsavel: string;
   observacao?: string;
-  // Campos opcionais de compatibilidade
   data?: string;
   familia_bairro?: string;
 }
@@ -97,14 +95,10 @@ export interface NovoItemPayload {
   unidade: UnidadeItem | string;
   controla_validade: boolean;
   estoque_minimo: number;
-  // Campos opcionais para inicialização local
   saldo_inicial?: number;
   validade_inicial?: string;
 }
 
-// ----------------------------------------------------------------------------
-// DADOS INICIAIS (MOCK) — Baseados na data corrente
-// ----------------------------------------------------------------------------
 const ITENS_MOCK_INICIAIS: Item[] = [
   {
     id: "ITM-0001",
@@ -157,66 +151,6 @@ const ITENS_MOCK_INICIAIS: Item[] = [
     validade_mais_proxima: "2027-05-18",
   },
   {
-    id: "ITM-0006",
-    item_nome: "Sardinha em Lata 125g",
-    categoria: "Alimentos",
-    unidade: "un",
-    controla_validade: true,
-    estoque_minimo: 15,
-    saldo_atual: 8, // Abaixo do mínimo!
-    validade_mais_proxima: "2028-01-20",
-  },
-  {
-    id: "ITM-0007",
-    item_nome: "Farinha de Trigo Especial 1kg",
-    categoria: "Alimentos",
-    unidade: "kg",
-    controla_validade: true,
-    estoque_minimo: 8,
-    saldo_atual: 2, // Abaixo do mínimo E vencendo em breve!
-    validade_mais_proxima: "2026-10-22", // Vence em 2 dias
-  },
-  {
-    id: "ITM-0008",
-    item_nome: "Biscoito Maisena 400g",
-    categoria: "Alimentos",
-    unidade: "pacote",
-    controla_validade: true,
-    estoque_minimo: 10,
-    saldo_atual: 14,
-    validade_mais_proxima: "2026-10-26", // Vence em 6 dias
-  },
-  {
-    id: "ITM-0009",
-    item_nome: "Iogurte Natural 170g",
-    categoria: "Alimentos",
-    unidade: "un",
-    controla_validade: true,
-    estoque_minimo: 10,
-    saldo_atual: 6,
-    validade_mais_proxima: "2026-10-16", // Vencido há 4 dias!
-  },
-  {
-    id: "ITM-0010",
-    item_nome: "Sabonete em Barra 90g",
-    categoria: "Higiene",
-    unidade: "un",
-    controla_validade: false,
-    estoque_minimo: 20,
-    saldo_atual: 45,
-    validade_mais_proxima: null,
-  },
-  {
-    id: "ITM-0011",
-    item_nome: "Detergente Líquido Neutro 500ml",
-    categoria: "Higiene",
-    unidade: "un",
-    controla_validade: false,
-    estoque_minimo: 15,
-    saldo_atual: 30,
-    validade_mais_proxima: null,
-  },
-  {
     id: "ITM-0012",
     item_nome: "Creme Dental Flúor 90g",
     categoria: "Higiene",
@@ -254,16 +188,6 @@ const ITENS_MOCK_INICIAIS: Item[] = [
     controla_validade: false,
     estoque_minimo: 10,
     saldo_atual: 15,
-    validade_mais_proxima: null,
-  },
-  {
-    id: "ITM-0016",
-    item_nome: "Agasalhos de Lã Juvenil",
-    categoria: "Roupa",
-    unidade: "un",
-    controla_validade: false,
-    estoque_minimo: 8,
-    saldo_atual: 4, // Abaixo do mínimo!
     validade_mais_proxima: null,
   },
   {
@@ -496,32 +420,6 @@ const MOVIMENTACOES_MOCK_INICIAIS: Movimentacao[] = [
     responsavel: "Mariana Souza",
   },
   {
-    id: "mov-13",
-    data: "2026-06-20",
-    tipo: "entrada",
-    item_id: "ITM-0006",
-    item_nome: "Sardinha em Lata 125g",
-    quantidade: 20,
-    unidade: "un",
-    doador_tipo: "Empresa",
-    doador_nome: "Pescados Mar Azul",
-    doador_contato: "sac@marazul.com",
-    validade_lote: "2028-01-20",
-  },
-  {
-    id: "mov-12",
-    data: "2026-06-15",
-    tipo: "distribuicao",
-    item_id: "ITM-0006",
-    item_nome: "Sardinha em Lata 125g",
-    quantidade: 12,
-    unidade: "un",
-    familia_nome: "Família Gonçalves",
-    familia_bairro: "Morro da Paz",
-    bairro: "Morro da Paz",
-    responsavel: "Assistente Ana Lúcia",
-  },
-  {
     id: "mov-11",
     data: "2026-06-10",
     tipo: "entrada",
@@ -662,7 +560,6 @@ function carregarItensLocais(): Item[] {
         id: normalizarIdItem(it.id),
       }));
     }
-    // Migração de v1 para v2 se houver cache antigo
     const salvoV1 = localStorage.getItem("doamais_itens_v1");
     if (salvoV1) {
       const parsedV1: Item[] = JSON.parse(salvoV1);
@@ -732,40 +629,35 @@ function salvarMovsLocais(movs: Movimentacao[]): void {
   }
 }
 
-// ----------------------------------------------------------------------------
-// INTEGRAÇÃO COM GOOGLE PLANILHAS (ABA ESTOQUE)
-// ----------------------------------------------------------------------------
-export function obterUrlSheetsEstoque(): string {
-  const urlPadrao =
-    "https://docs.google.com/spreadsheets/d/1BmMa4MgyXv-l6y_cs6ea2Yt26jmnoZALvQDdaLf5ON0/edit?gid=1152434347#gid=1152434347";
-
+export function obterUrlSheetsEstoque(): string | undefined {
   if (typeof import.meta !== "undefined" && import.meta.env) {
     return (
       import.meta.env.VITE_GOOGLE_SHEETS_ESTOQUE_URL ||
-      import.meta.env.VITE_SHEETS_ESTOQUE_URL ||
-      import.meta.env.VITE_GOOGLE_PLANILHAS_ESTOQUE_URL ||
-      import.meta.env.VITE_GOOGLE_SHEETS_URL ||
-      urlPadrao
+      import.meta.env.VITE_GOOGLE_SHEETS_URL
     );
   }
 
-  return urlPadrao;
+  return undefined;
 }
 
-export function converterUrlParaExportCsv(url: string, gidPadrao = "1152434347"): string {
+export function converterUrlParaExportCsv(url: string): string | undefined {
   if (!url || typeof url !== "string") {
-    return `https://docs.google.com/spreadsheets/d/1BmMa4MgyXv-l6y_cs6ea2Yt26jmnoZALvQDdaLf5ON0/export?format=csv&gid=${gidPadrao}`;
+    return undefined;
   }
 
+  // URL já é uma URL de exportação CSV — usa diretamente
   if (url.includes("/export?") && url.includes("format=csv")) {
     return url;
   }
 
+  // Extrai o sheetId e o gid da URL de edição fornecida via env
   const matchId = url.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
-  const sheetId = matchId ? matchId[1] : "1BmMa4MgyXv-l6y_cs6ea2Yt26jmnoZALvQDdaLf5ON0";
+  if (!matchId) return undefined;
+  const sheetId = matchId[1];
 
   const matchGid = url.match(/[?&#]gid=([0-9]+)/);
-  const gid = matchGid ? matchGid[1] : gidPadrao;
+  if (!matchGid) return undefined;
+  const gid = matchGid[1];
 
   return `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${gid}`;
 }
@@ -926,23 +818,33 @@ export function mapearLinhasSheetsParaItens(csvText: string): Item[] {
 export async function getItens(forcarAtualizacao = false): Promise<Item[]> {
   try {
     const urlOriginal = obterUrlSheetsEstoque();
-    if (urlOriginal) {
+    if (!urlOriginal) {
+      console.info(
+        "VITE_GOOGLE_SHEETS_ESTOQUE_URL não configurado no .env — usando dados locais."
+      );
+    } else {
       const urlCsv = converterUrlParaExportCsv(urlOriginal);
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 7000);
+      if (!urlCsv) {
+        console.warn(
+          "Não foi possível converter a URL da planilha para CSV. Verifique VITE_GOOGLE_SHEETS_ESTOQUE_URL no .env."
+        );
+      } else {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 7000);
 
-      const response = await fetch(urlCsv, {
-        signal: controller.signal,
-        cache: forcarAtualizacao ? "no-store" : "default",
-      });
-      clearTimeout(timeoutId);
+        const response = await fetch(urlCsv, {
+          signal: controller.signal,
+          cache: forcarAtualizacao ? "no-store" : "default",
+        });
+        clearTimeout(timeoutId);
 
-      if (response.ok) {
-        const csvText = await response.text();
-        const itensDaPlanilha = mapearLinhasSheetsParaItens(csvText);
-        if (itensDaPlanilha.length > 0) {
-          salvarItensLocais(itensDaPlanilha);
-          return itensDaPlanilha;
+        if (response.ok) {
+          const csvText = await response.text();
+          const itensDaPlanilha = mapearLinhasSheetsParaItens(csvText);
+          if (itensDaPlanilha.length > 0) {
+            salvarItensLocais(itensDaPlanilha);
+            return itensDaPlanilha;
+          }
         }
       }
     }
