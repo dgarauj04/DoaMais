@@ -151,11 +151,11 @@ Saldo_Atual    (I2): =G2-H2
 
 ### Aba `Entradas`
 
-`ID_Movimentacao` · `Data` · `ID_Item` · `Item_Nome` · `Quantidade` · `Doador_Tipo` · `Doador_Nome` · `Doador_Contato` · `Validade_Lote` · `Observacao`
+`ID_Movimentacao` · `Data` · `ID_Item` · `Item_Nome` · `Quantidade` · `Unidade` · `Doador_Tipo` · `Doador_Nome` · `Doador_Contato` · `Validade_Lote` · `Observacao`
 
 ### Aba `Saidas`
 
-`ID_Movimentacao` · `Data` · `Tipo_Saida` · `ID_Item` · `Item_Nome` · `Quantidade` · `Familia_Nome` · `Bairro` · `Motivo_Perda` · `Responsavel` · `Observacao`
+`ID_Movimentacao` · `Data` · `Tipo_Saida` · `ID_Item` · `Item_Nome` · `Quantidade` · `Unidade` · `Familia_Nome` · `Bairro` · `Motivo_Perda` · `Responsavel` · `Observacao`
 
 ### Relacionamento
 
@@ -246,11 +246,15 @@ Exemplo ilustrativo (entrada):
 
 Respostas tratadas pela interface:
 
-| Código | Significado                                                      |
-| ------ | ---------------------------------------------------------------- |
-| `200`  | Sucesso (`status`, `id_movimentacao`, `item_nome`, `quantidade`) |
-| `400`  | Saldo insuficiente (saída bloqueada pelo Make)                   |
-| `409`  | Produto já cadastrado                                            |
+| Código | Significado                                                                                                                  |
+| ------ | ---------------------------------------------------------------------------------------------------------------------------- |
+| `200`  | Sucesso (`status`, `id_movimentacao`, `item_nome`, `quantidade`)                                                             |
+| `400`  | Saldo insuficiente (saída bloqueada pelo Make)                                                                               |
+| `404`  | Item não encontrado ou não registrado no estoque                                                                             |
+| `409`  | Produto já cadastrado (tentativa de criar um item com nome duplicado)                                                        |
+| `500`  | Erro interno do servidor ou falha na comunicação com o Make                                                                  |
+| `502`  | Bad Gateway (serviço externo indisponível, ex: Google Sheets inacessível no momento)                                         |
+| `503`  | Service Unavailable (serviço sobrecarregado)                                                                                 |
 
 ---
 

@@ -9,6 +9,9 @@ import {
   AlertCircle,
   Package,
   Layers,
+  RefreshCw,
+  ExternalLink,
+  FileSpreadsheet,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -16,7 +19,7 @@ import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { NovoItemDialog } from "@/components/common/novo-item-dialog";
-import { getItens, Item } from "@/lib/data";
+import { getItens, Item, obterUrlSheetsEstoque } from "@/lib/data";
 import { formatarData } from "@/lib/utils";
 
 type StatusFiltro = "todos" | "ok" | "minimo" | "validade";
@@ -25,6 +28,8 @@ export function EstoquePage() {
   const [itens, setItens] = useState<Item[]>([]);
   const [dataHoje, setDataHoje] = useState<Date>(new Date());
   const [loading, setLoading] = useState(true);
+  const [sincronizando, setSincronizando] = useState(false);
+  const [ultimaAtualizacao, setUltimaAtualizacao] = useState<Date | null>(null);
 
   const [busca, setBusca] = useState("");
   const [categoriaFiltro, setCategoriaFiltro] = useState<string>("todas");
@@ -32,20 +37,36 @@ export function EstoquePage() {
 
   const [modalNovoItemAberto, setModalNovoItemAberto] = useState(false);
 
+  const urlPlanilha = useMemo(() => obterUrlSheetsEstoque(), []);
+
   useEffect(() => {
     setDataHoje(new Date());
     carregarItens();
   }, []);
 
-  async function carregarItens() {
-    setLoading(true);
+  async function carregarItens(forcar = false) {
+    if (forcar) {
+      setSincronizando(true);
+    } else {
+      setLoading(true);
+    }
     try {
-      const dados = await getItens();
+      const dados = await getItens(forcar);
       setItens(dados);
+      setUltimaAtualizacao(new Date());
     } finally {
       setLoading(false);
+      setSincronizando(false);
     }
   }
+
+  const categoriasDisponiveis = useMemo(() => {
+    const lista = new Set<string>();
+    itens.forEach((it) => {
+      if (it.categoria) lista.add(it.categoria);
+    });
+    return Array.from(lista).sort((a, b) => a.localeCompare(b));
+  }, [itens]);
 
   const avaliarStatusItem = (item: Item) => {
     const hoje = new Date(dataHoje);
@@ -131,22 +152,63 @@ export function EstoquePage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-stone-200">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-stone-900 flex items-center gap-2">
-            <Package className="w-6 h-6 text-emerald-700" />
-            Controle de Estoque
-          </h2>
+          <div className="flex items-center gap-2 flex-wrap">
+            <h2 className="text-2xl font-bold tracking-tight text-stone-900 flex items-center gap-2">
+              <Package className="w-6 h-6 text-emerald-700" />
+              Controle de Estoque
+            </h2>
+            <Badge
+              variant="outline"
+              className="bg-emerald-50/70 border-emerald-200 text-emerald-800 text-[11px] font-medium gap-1 px-2 py-0.5"
+            >
+              <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" />
+              Google Planilhas (Aba Estoque)
+            </Badge>
+          </div>
           <p className="text-sm text-stone-500 mt-0.5">
-            Visualize o saldo atual em estoque, limites mínimos de segurança e prazos de validade.
+            Visualize o saldo atual em estoque, limites mínimos de segurança e prazos de validade sincronizados da planilha.
           </p>
         </div>
 
-        <Button
-          onClick={() => setModalNovoItemAberto(true)}
-          className="bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-sm shadow-sm"
-        >
-          <PlusCircle className="w-4 h-4 text-emerald-200" />
-          <span>Novo Produto</span>
-        </Button>
+        <div className="flex items-center gap-2 flex-wrap">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => carregarItens(true)}
+            disabled={sincronizando || loading}
+            className="text-stone-700 hover:text-stone-900 border-stone-200 gap-1.5 h-9 text-xs"
+            title="Buscar dados mais recentes do Google Planilhas"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${sincronizando ? "animate-spin text-emerald-600" : ""}`} />
+            <span>{sincronizando ? "Sincronizando..." : "Sincronizar"}</span>
+          </Button>
+
+          {urlPlanilha && (
+            <a
+              href={urlPlanilha}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex"
+            >
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-stone-700 hover:text-emerald-800 hover:bg-emerald-50 hover:border-emerald-200 border-stone-200 gap-1.5 h-9 text-xs"
+              >
+                <ExternalLink className="w-3.5 h-3.5 text-emerald-600" />
+                <span>Abrir Planilha</span>
+              </Button>
+            </a>
+          )}
+
+          <Button
+            onClick={() => setModalNovoItemAberto(true)}
+            className="bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-xs shadow-sm h-9"
+          >
+            <PlusCircle className="w-4 h-4 text-emerald-200" />
+            <span>Novo Produto</span>
+          </Button>
+        </div>
       </div>
 
       <Card className="doamais-card p-4">
@@ -168,11 +230,11 @@ export function EstoquePage() {
               className="h-10"
             >
               <option value="todas">Todas as categorias</option>
-              <option value="Alimentos">Alimentos</option>
-              <option value="Higiene">Higiene</option>
-              <option value="Roupa">Roupa</option>
-              <option value="Material Escolar">Material Escolar</option>
-              <option value="Outro">Outro</option>
+              {categoriasDisponiveis.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              ))}
             </Select>
           </div>
 
@@ -191,9 +253,16 @@ export function EstoquePage() {
         </div>
 
         <div className="mt-3 pt-3 border-t border-stone-100 flex items-center justify-between text-xs text-stone-500">
-          <span>
-            Exibindo <strong>{itensFiltrados.length}</strong> de <strong>{itens.length}</strong> produtos
-          </span>
+          <div className="flex items-center gap-3">
+            <span>
+              Exibindo <strong>{itensFiltrados.length}</strong> de <strong>{itens.length}</strong> produtos
+            </span>
+            {ultimaAtualizacao && (
+              <span className="text-stone-400 text-[11px] hidden sm:inline">
+                • Atualizado às {ultimaAtualizacao.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
+              </span>
+            )}
+          </div>
           {(busca || categoriaFiltro !== "todas" || statusFiltro !== "todos") && (
             <button
               onClick={() => {
@@ -225,7 +294,17 @@ export function EstoquePage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-stone-100 text-stone-800">
-                {itensFiltrados.length === 0 ? (
+                {loading ? (
+                  <tr>
+                    <td colSpan={7} className="py-12 text-center text-stone-500">
+                      <RefreshCw className="w-7 h-7 mx-auto text-emerald-600 animate-spin mb-2" />
+                      <p className="font-semibold text-stone-800 text-sm">Carregando estoque...</p>
+                      <p className="text-xs text-stone-400 mt-1">
+                        Sincronizando itens e saldos diretamente do Google Planilhas.
+                      </p>
+                    </td>
+                  </tr>
+                ) : itensFiltrados.length === 0 ? (
                   <tr>
                     <td colSpan={7} className="py-12 text-center text-stone-500">
                       <Layers className="w-8 h-8 mx-auto text-stone-300 mb-2" />

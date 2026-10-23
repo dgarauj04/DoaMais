@@ -2,10 +2,23 @@ export type CategoriaItem =
   | "Alimentos"
   | "Higiene"
   | "Roupa"
+  | "Roupas"
   | "Material Escolar"
-  | "Outro";
+  | "Limpeza"
+  | "Eletrônicos"
+  | "Outro"
+  | (string & {});
 
-export type UnidadeItem = "kg" | "L" | "un" | "caixa" | "pacote";
+export type UnidadeItem =
+  | "kg"
+  | "L"
+  | "un"
+  | "unidade"
+  | "caixa"
+  | "pacote"
+  | "lata"
+  | "peça"
+  | (string & {});
 
 export type TipoMovimentacao = "entrada" | "distribuicao" | "consumo" | "perda";
 
@@ -20,6 +33,8 @@ export interface Item {
   estoque_minimo: number;
   saldo_atual: number;
   validade_mais_proxima: string | null; // ISO YYYY-MM-DD
+  total_entradas?: number;
+  total_saidas?: number;
 }
 
 export interface Movimentacao {
@@ -60,7 +75,7 @@ export interface EntradaPayload {
 
 export interface SaidaPayload {
   tipo_acao: "saida";
-  tipo: "distribuicao" | "consumo" | "perda";
+  tipo: "distribuicao" | "consumo" | "perda" | "Distribuição" | "Consumo" | "Perda" | string;
   item_id: string; // "ITM-0002"
   item_nome: string;
   quantidade: number;
@@ -304,43 +319,6 @@ const MOVIMENTACOES_MOCK_INICIAIS: Movimentacao[] = [
     observacao: "Doação com validade curta recebida para distribuição rápida",
   },
   {
-    id: "mov-39",
-    data: "2026-10-15",
-    tipo: "distribuicao",
-    item_id: "ITM-0002",
-    item_nome: "Feijão Carioca Tipo 1",
-    quantidade: 5,
-    unidade: "kg",
-    familia_nome: "Família Santos",
-    familia_bairro: "Jardim Esperança",
-    bairro: "Jardim Esperança",
-    responsavel: "Carlos Eduardo",
-    observacao: "Atendimento semanal",
-  },
-  {
-    id: "mov-38",
-    data: "2026-10-14",
-    tipo: "perda",
-    item_id: "ITM-0009",
-    item_nome: "Iogurte Natural 170g",
-    quantidade: 2,
-    unidade: "un",
-    motivo_perda: "Vencimento",
-    responsavel: "Mariana Souza",
-    observacao: "Embalagem identificada vencida na triagem matinal",
-  },
-  {
-    id: "mov-37",
-    data: "2026-10-10",
-    tipo: "consumo",
-    item_id: "ITM-0011",
-    item_nome: "Detergente Líquido Neutro 500ml",
-    quantidade: 2,
-    unidade: "un",
-    responsavel: "Dona Neide",
-    observacao: "Limpeza geral da cozinha comunitária",
-  },
-  {
     id: "mov-36",
     data: "2026-10-08",
     tipo: "entrada",
@@ -398,69 +376,6 @@ const MOVIMENTACOES_MOCK_INICIAIS: Movimentacao[] = [
     observacao: "Apoio a família de 6 pessoas",
   },
   {
-    id: "mov-32",
-    data: "2026-09-25",
-    tipo: "distribuicao",
-    item_id: "ITM-0003",
-    item_nome: "Leite UHT Integral 1L",
-    quantidade: 15,
-    unidade: "un",
-    familia_nome: "Família Costa",
-    familia_bairro: "Jardim das Acácias",
-    bairro: "Jardim das Acácias",
-    responsavel: "Mariana Souza",
-    observacao: "Crianças na primeira infância",
-  },
-  {
-    id: "mov-31",
-    data: "2026-09-22",
-    tipo: "entrada",
-    item_id: "ITM-0017",
-    item_nome: "Cadernos Universitários 96 fls",
-    quantidade: 25,
-    unidade: "un",
-    doador_tipo: "Pessoa",
-    doador_nome: "Prof. Paulo Antunes",
-    doador_contato: "paulo.antunes@educacao.sp.gov.br",
-    observacao: "Campanha Volta às Aulas comunitária",
-  },
-  {
-    id: "mov-30",
-    data: "2026-09-20",
-    tipo: "perda",
-    item_id: "ITM-0005",
-    item_nome: "Óleo de Soja 900ml",
-    quantidade: 1,
-    unidade: "un",
-    motivo_perda: "Avaria",
-    responsavel: "Seu Roberto",
-    observacao: "Garrafa perfurada no transporte interno",
-  },
-  {
-    id: "mov-29",
-    data: "2026-09-15",
-    tipo: "distribuicao",
-    item_id: "ITM-0002",
-    item_nome: "Feijão Carioca Tipo 1",
-    quantidade: 10,
-    unidade: "kg",
-    familia_nome: "Família Ribeiro",
-    familia_bairro: "Vila Nova",
-    bairro: "Vila Nova",
-    responsavel: "Assistente Ana Lúcia",
-  },
-  {
-    id: "mov-28",
-    data: "2026-09-10",
-    tipo: "entrada",
-    item_id: "ITM-0002",
-    item_nome: "Feijão Carioca Tipo 1",
-    quantidade: 25,
-    unidade: "kg",
-    doador_tipo: "Anônimo",
-    observacao: "Entregue na portaria da sede",
-  },
-  {
     id: "mov-27",
     data: "2026-09-05",
     tipo: "consumo",
@@ -487,19 +402,6 @@ const MOVIMENTACOES_MOCK_INICIAIS: Movimentacao[] = [
 
   // Agosto / 2026
   {
-    id: "mov-25",
-    data: "2026-08-29",
-    tipo: "distribuicao",
-    item_id: "ITM-0001",
-    item_nome: "Arroz Agulhinha 5kg",
-    quantidade: 8,
-    unidade: "caixa",
-    familia_nome: "Família Souza",
-    familia_bairro: "Comunidade Estrela",
-    bairro: "Comunidade Estrela",
-    responsavel: "Carlos Eduardo",
-  },
-  {
     id: "mov-24",
     data: "2026-08-25",
     tipo: "entrada",
@@ -511,31 +413,6 @@ const MOVIMENTACOES_MOCK_INICIAIS: Movimentacao[] = [
     doador_nome: "Distribuidora Aliança",
     doador_contato: "atendimento@aliancadist.com.br",
     validade_lote: "2027-05-18",
-  },
-  {
-    id: "mov-23",
-    data: "2026-08-20",
-    tipo: "distribuicao",
-    item_id: "ITM-0012",
-    item_nome: "Creme Dental Flúor 90g",
-    quantidade: 15,
-    unidade: "un",
-    familia_nome: "Associação de Moradores",
-    familia_bairro: "Morro da Paz",
-    bairro: "Morro da Paz",
-    responsavel: "Assistente Ana Lúcia",
-  },
-  {
-    id: "mov-22",
-    data: "2026-08-15",
-    tipo: "entrada",
-    item_id: "ITM-0018",
-    item_nome: "Caixa de Lápis de Cor 12 Cores",
-    quantidade: 15,
-    unidade: "caixa",
-    doador_tipo: "Pessoa",
-    doador_nome: "Beatriz Nogueira",
-    doador_contato: "beatriz.nog@gmail.com",
   },
   {
     id: "mov-21",
@@ -602,29 +479,6 @@ const MOVIMENTACOES_MOCK_INICIAIS: Movimentacao[] = [
     familia_bairro: "Jardim das Acácias",
     bairro: "Jardim das Acácias",
     responsavel: "Assistente Ana Lúcia",
-  },
-  {
-    id: "mov-16",
-    data: "2026-07-12",
-    tipo: "entrada",
-    item_id: "ITM-0004",
-    item_nome: "Macarrão Espaguete 500g",
-    quantidade: 30,
-    unidade: "pacote",
-    doador_tipo: "Pessoa",
-    doador_nome: "Família Rossi",
-    doador_contato: "rossi.alimentos@uol.com.br",
-  },
-  {
-    id: "mov-15",
-    data: "2026-07-06",
-    tipo: "consumo",
-    item_id: "ITM-0010",
-    item_nome: "Sabonete em Barra 90g",
-    quantidade: 3,
-    unidade: "un",
-    responsavel: "Carlos Eduardo",
-    observacao: "Reposição dos lavatórios comunitários",
   },
 
   // Junho / 2026
@@ -718,62 +572,6 @@ const MOVIMENTACOES_MOCK_INICIAIS: Movimentacao[] = [
     familia_bairro: "Jardim Esperança",
     bairro: "Jardim Esperança",
     responsavel: "Mariana Souza",
-  },
-  {
-    id: "mov-07",
-    data: "2026-05-20",
-    tipo: "entrada",
-    item_id: "ITM-0001",
-    item_nome: "Arroz Agulhinha 5kg",
-    quantidade: 15,
-    unidade: "caixa",
-    doador_tipo: "Empresa",
-    doador_nome: "Rotary Club Comunitário",
-    doador_contato: "secretaria@rotarylocal.org.br",
-  },
-  {
-    id: "mov-06",
-    data: "2026-05-16",
-    tipo: "distribuicao",
-    item_id: "ITM-0016",
-    item_nome: "Agasalhos de Lã Juvenil",
-    quantidade: 4,
-    unidade: "un",
-    familia_nome: "Família Silva Ramos",
-    familia_bairro: "Bairro São José",
-    bairro: "Bairro São José",
-    responsavel: "Assistente Ana Lúcia",
-  },
-  {
-    id: "mov-05",
-    data: "2026-05-12",
-    tipo: "entrada",
-    item_id: "ITM-0016",
-    item_nome: "Agasalhos de Lã Juvenil",
-    quantidade: 8,
-    unidade: "un",
-    doador_tipo: "Pessoa",
-    doador_nome: "Clube das Mães Solidárias",
-  },
-  {
-    id: "mov-04",
-    data: "2026-05-08",
-    tipo: "entrada",
-    item_id: "ITM-0011",
-    item_nome: "Detergente Líquido Neutro 500ml",
-    quantidade: 24,
-    unidade: "un",
-    doador_tipo: "Anônimo",
-  },
-  {
-    id: "mov-03",
-    data: "2026-05-05",
-    tipo: "consumo",
-    item_id: "ITM-0011",
-    item_nome: "Detergente Líquido Neutro 500ml",
-    quantidade: 1,
-    unidade: "un",
-    responsavel: "Dona Neide",
   },
   {
     id: "mov-02",
@@ -935,14 +733,227 @@ function salvarMovsLocais(movs: Movimentacao[]): void {
 }
 
 // ----------------------------------------------------------------------------
+// INTEGRAÇÃO COM GOOGLE PLANILHAS (ABA ESTOQUE)
+// ----------------------------------------------------------------------------
+export function obterUrlSheetsEstoque(): string {
+  const urlPadrao =
+    "https://docs.google.com/spreadsheets/d/1BmMa4MgyXv-l6y_cs6ea2Yt26jmnoZALvQDdaLf5ON0/edit?gid=1152434347#gid=1152434347";
+
+  if (typeof import.meta !== "undefined" && import.meta.env) {
+    return (
+      import.meta.env.VITE_GOOGLE_SHEETS_ESTOQUE_URL ||
+      import.meta.env.VITE_SHEETS_ESTOQUE_URL ||
+      import.meta.env.VITE_GOOGLE_PLANILHAS_ESTOQUE_URL ||
+      import.meta.env.VITE_GOOGLE_SHEETS_URL ||
+      urlPadrao
+    );
+  }
+
+  return urlPadrao;
+}
+
+export function converterUrlParaExportCsv(url: string, gidPadrao = "1152434347"): string {
+  if (!url || typeof url !== "string") {
+    return `https://docs.google.com/spreadsheets/d/1BmMa4MgyXv-l6y_cs6ea2Yt26jmnoZALvQDdaLf5ON0/export?format=csv&gid=${gidPadrao}`;
+  }
+
+  if (url.includes("/export?") && url.includes("format=csv")) {
+    return url;
+  }
+
+  const matchId = url.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
+  const sheetId = matchId ? matchId[1] : "1BmMa4MgyXv-l6y_cs6ea2Yt26jmnoZALvQDdaLf5ON0";
+
+  const matchGid = url.match(/[?&#]gid=([0-9]+)/);
+  const gid = matchGid ? matchGid[1] : gidPadrao;
+
+  return `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${gid}`;
+}
+
+export function normalizarDataValidade(valor: string | undefined): string | null {
+  if (!valor) return null;
+  const limpo = valor.trim();
+  if (!limpo || limpo === "-" || limpo.toLowerCase() === "null") return null;
+
+  // Formato YYYY-MM-DD
+  if (/^\d{4}-\d{2}-\d{2}$/.test(limpo)) {
+    return limpo;
+  }
+
+  // Formato DD/MM/YYYY
+  const matchBr = limpo.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (matchBr) {
+    const dia = matchBr[1].padStart(2, "0");
+    const mes = matchBr[2].padStart(2, "0");
+    const ano = matchBr[3];
+    return `${ano}-${mes}-${dia}`;
+  }
+
+  // Fallback para parse de Date
+  const d = new Date(limpo);
+  if (!isNaN(d.getTime())) {
+    return d.toISOString().split("T")[0];
+  }
+
+  return null;
+}
+
+function parseCSV(text: string): string[][] {
+  const rows: string[][] = [];
+  let currentRow: string[] = [""];
+  let insideQuote = false;
+
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i];
+    const nextChar = text[i + 1];
+
+    if (char === '"') {
+      if (insideQuote && nextChar === '"') {
+        currentRow[currentRow.length - 1] += '"';
+        i++;
+      } else {
+        insideQuote = !insideQuote;
+      }
+    } else if (char === "," && !insideQuote) {
+      currentRow.push("");
+    } else if ((char === "\r" || char === "\n") && !insideQuote) {
+      if (char === "\r" && nextChar === "\n") {
+        i++;
+      }
+      rows.push(currentRow);
+      currentRow = [""];
+    } else {
+      currentRow[currentRow.length - 1] += char;
+    }
+  }
+
+  if (currentRow.length > 1 || currentRow[0] !== "") {
+    rows.push(currentRow);
+  }
+
+  return rows;
+}
+
+export function mapearLinhasSheetsParaItens(csvText: string): Item[] {
+  const linhas = parseCSV(csvText);
+  if (linhas.length < 2) return [];
+
+  const cabecalho = linhas[0].map((h) =>
+    h
+      .trim()
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9_]/g, "_")
+  );
+
+  const getColIndex = (...nomes: string[]) => {
+    for (const nome of nomes) {
+      const idx = cabecalho.findIndex((c) => c === nome || c.includes(nome));
+      if (idx !== -1) return idx;
+    }
+    return -1;
+  };
+
+  const idIdx = getColIndex("id", "codigo");
+  const nomeIdx = getColIndex("nome", "item", "produto");
+  const catIdx = getColIndex("categoria");
+  const unIdx = getColIndex("unidade", "un");
+  const valControleIdx = getColIndex("controla_validade", "validade_controle");
+  const minIdx = getColIndex("estoque_minimo", "minimo");
+  const saldoIdx = getColIndex("saldo_atual", "saldo");
+  const proxValIdx = getColIndex("validade_mais_proxima", "validade");
+  const entIdx = getColIndex("total_entradas", "entradas");
+  const saiIdx = getColIndex("total_saidas", "saidas");
+
+  const itens: Item[] = [];
+
+  for (let i = 1; i < linhas.length; i++) {
+    const colunas = linhas[i];
+    if (!colunas || colunas.every((c) => !c.trim())) continue;
+
+    const idBruto = (idIdx !== -1 ? colunas[idIdx] : "")?.trim();
+    const nome = (nomeIdx !== -1 ? colunas[nomeIdx] : "")?.trim();
+    if (!nome && !idBruto) continue;
+
+    const id = idBruto || `ITM-${String(i).padStart(4, "0")}`;
+    const categoria = ((catIdx !== -1 ? colunas[catIdx] : "")?.trim() || "Outro") as CategoriaItem;
+    const unidade = ((unIdx !== -1 ? colunas[unIdx] : "")?.trim() || "un") as UnidadeItem;
+
+    const controlaStr = (valControleIdx !== -1 ? colunas[valControleIdx] : "")?.trim().toLowerCase();
+    const controlaValidade =
+      controlaStr === "true" ||
+      controlaStr === "verdadeiro" ||
+      controlaStr === "sim" ||
+      controlaStr === "1";
+
+    const estoqueMinimo = Number(
+      (minIdx !== -1 ? colunas[minIdx] : "0")?.trim().replace(",", ".") || 0
+    );
+    const saldoAtual = Number(
+      (saldoIdx !== -1 ? colunas[saldoIdx] : "0")?.trim().replace(",", ".") || 0
+    );
+    const totalEntradas = Number(
+      (entIdx !== -1 ? colunas[entIdx] : "0")?.trim().replace(",", ".") || 0
+    );
+    const totalSaidas = Number(
+      (saiIdx !== -1 ? colunas[saiIdx] : "0")?.trim().replace(",", ".") || 0
+    );
+
+    const valBruta = proxValIdx !== -1 ? colunas[proxValIdx] : "";
+    const validadeMaisProxima = normalizarDataValidade(valBruta);
+
+    itens.push({
+      id: normalizarIdItem(id),
+      item_nome: nome || "Item sem nome",
+      categoria,
+      unidade,
+      controla_validade: controlaValidade,
+      estoque_minimo: isNaN(estoqueMinimo) ? 0 : estoqueMinimo,
+      saldo_atual: isNaN(saldoAtual) ? 0 : saldoAtual,
+      total_entradas: isNaN(totalEntradas) ? undefined : totalEntradas,
+      total_saidas: isNaN(totalSaidas) ? undefined : totalSaidas,
+      validade_mais_proxima: validadeMaisProxima,
+    });
+  }
+
+  return itens;
+}
+
+// ----------------------------------------------------------------------------
 // FUNÇÕES PRINCIPAIS DE ACESSO A DADOS
 // ----------------------------------------------------------------------------
-export async function getItens(): Promise<Item[]> {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(carregarItensLocais());
-    }, 50);
-  });
+export async function getItens(forcarAtualizacao = false): Promise<Item[]> {
+  try {
+    const urlOriginal = obterUrlSheetsEstoque();
+    if (urlOriginal) {
+      const urlCsv = converterUrlParaExportCsv(urlOriginal);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 7000);
+
+      const response = await fetch(urlCsv, {
+        signal: controller.signal,
+        cache: forcarAtualizacao ? "no-store" : "default",
+      });
+      clearTimeout(timeoutId);
+
+      if (response.ok) {
+        const csvText = await response.text();
+        const itensDaPlanilha = mapearLinhasSheetsParaItens(csvText);
+        if (itensDaPlanilha.length > 0) {
+          salvarItensLocais(itensDaPlanilha);
+          return itensDaPlanilha;
+        }
+      }
+    }
+  } catch (erro) {
+    console.warn(
+      "Não foi possível sincronizar com o Google Planilhas em tempo real, utilizando dados locais:",
+      erro
+    );
+  }
+
+  return carregarItensLocais();
 }
 
 export async function getMovimentacoes(): Promise<Movimentacao[]> {
@@ -1014,7 +1025,6 @@ export async function enviarEntrada(
     categoria?: CategoriaItem;
   }
 ): Promise<{ success: boolean; message?: string }> {
-  // Payload enviado ao Webhook no formato do Google Sheets (id e carimbo adicionados automaticamente no Sheets)
   const payload: EntradaPayload = {
     tipo_acao: "entrada",
     item_id: dados.item_id,
@@ -1070,7 +1080,7 @@ export async function enviarEntrada(
 
 export async function enviarSaida(
   dados: {
-    tipo: "distribuicao" | "consumo" | "perda";
+    tipo: "distribuicao" | "consumo" | "perda" | "Distribuição" | "Consumo" | "Perda" | string;
     item_id: string;
     item_nome: string;
     quantidade: number;
@@ -1102,6 +1112,12 @@ export async function enviarSaida(
   }
 
   const nomeBairro = dados.bairro || dados.familia_bairro || "";
+  const tipoStr = dados.tipo.toLowerCase();
+  const tipoNormalizado: TipoMovimentacao = tipoStr.includes("dist")
+    ? "distribuicao"
+    : tipoStr.includes("cons")
+    ? "consumo"
+    : "perda";
 
   // Payload enviado ao Webhook no formato do Google Sheets (id e carimbo adicionados automaticamente no Sheets)
   const payload: SaidaPayload = {
@@ -1132,7 +1148,7 @@ export async function enviarSaida(
     const novaMov: Movimentacao = {
       id: `SAI-${String(Date.now()).slice(-5)}`,
       data: dados.data || new Date().toISOString().split("T")[0],
-      tipo: dados.tipo,
+      tipo: tipoNormalizado,
       item_id: dados.item_id,
       item_nome: dados.item_nome,
       quantidade: Number(dados.quantidade),

@@ -253,8 +253,11 @@ export function EntradaPage() {
                 >
                   <option value="Alimentos">Alimentos</option>
                   <option value="Higiene">Higiene</option>
-                  <option value="Roupa">Roupa</option>
+                  <option value="Roupas">Roupas</option>
                   <option value="Material Escolar">Material Escolar</option>
+                  <option value="Limpeza">Limpeza</option>
+                  <option value="Eletrônicos">Eletrônicos</option>
+                  <option value="Calçados">Calçados</option>
                   <option value="Outro">Outro</option>
                 </Select>
               </div>
@@ -343,7 +346,6 @@ export function EntradaPage() {
                 )}
               </div>
 
-              {/* Quantidade */}
               <div>
                 <Label required>Quantidade Recebida</Label>
                 <div className="relative">
@@ -366,7 +368,6 @@ export function EntradaPage() {
                 </p>
               </div>
 
-              {/* Validade */}
               {categoria === "Alimentos" ? (
                 <div>
                   <Label>Validade (opcional)</Label>

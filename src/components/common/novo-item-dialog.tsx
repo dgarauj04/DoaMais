@@ -149,8 +149,11 @@ export function NovoItemDialog({
               >
                 <option value="Alimentos">Alimentos</option>
                 <option value="Higiene">Higiene</option>
-                <option value="Roupa">Roupa</option>
+                <option value="Roupas">Roupas</option>
                 <option value="Material Escolar">Material Escolar</option>
+                <option value="Limpeza">Limpeza</option>
+                <option value="Eletrônicos">Eletrônicos</option>
+                <option value="Calçados">Calçados</option>
                 <option value="Outro">Outro</option>
               </Select>
             </div>
@@ -161,7 +164,7 @@ export function NovoItemDialog({
                 value={unidade}
                 onChange={(e) => setUnidade(e.target.value as UnidadeItem)}
               >
-                <option value="un">un (unidade)</option>
+                <option value="unidade">un (unidade)</option>
                 <option value="kg">kg (quilograma)</option>
                 <option value="L">L (litro)</option>
                 <option value="pacote">pacote</option>

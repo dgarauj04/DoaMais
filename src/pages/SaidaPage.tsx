@@ -16,7 +16,7 @@ import { Select, Label } from "@/components/ui/select";
 import { useToast } from "@/components/ui/toast";
 import { getItens, enviarSaida, Item } from "@/lib/data";
 
-type TipoSaida = "distribuicao" | "consumo" | "perda";
+type TipoSaida = "Distribuição" | "Consumo" | "Perda";
 
 export function SaidaPage() {
   const [searchParams] = useSearchParams();
@@ -29,7 +29,7 @@ export function SaidaPage() {
 
   const hojeStr = useMemo(() => new Date().toISOString().split("T")[0], []);
   const [data, setData] = useState(hojeStr);
-  const [tipoSaida, setTipoSaida] = useState<TipoSaida>("distribuicao");
+  const [tipoSaida, setTipoSaida] = useState<TipoSaida>("Distribuição");
   const [itemId, setItemId] = useState("");
   const [quantidade, setQuantidade] = useState("");
 
@@ -112,7 +112,7 @@ export function SaidaPage() {
       novosErros.quantidade = `Saldo insuficiente: existem apenas ${saldoDisponivel} ${itemSelecionado?.unidade || "un"} disponíveis no estoque.`;
     }
 
-    if (tipoSaida === "distribuicao") {
+    if (tipoSaida === "Distribuição") {
       if (!familiaNome.trim()) {
         novosErros.familiaNome = "Informe o nome da família beneficiada.";
       }
@@ -145,10 +145,10 @@ export function SaidaPage() {
         item_nome: itemSelecionado.item_nome,
         quantidade: Number(quantidade),
         unidade: itemSelecionado.unidade,
-        familia_nome: tipoSaida === "distribuicao" ? familiaNome.trim() : "",
-        bairro: tipoSaida === "distribuicao" ? familiaBairro.trim() : "",
-        familia_bairro: tipoSaida === "distribuicao" ? familiaBairro.trim() : "",
-        motivo_perda: tipoSaida === "perda" ? motivoPerda : "",
+        familia_nome: tipoSaida === "Distribuição" ? familiaNome.trim() : "",
+        bairro: tipoSaida === "Distribuição" ? familiaBairro.trim() : "",
+        familia_bairro: tipoSaida === "Distribuição" ? familiaBairro.trim() : "",
+        motivo_perda: tipoSaida === "Perda" ? motivoPerda : "",
         responsavel: responsavel.trim(),
         observacao: observacao.trim() || undefined,
       });
@@ -208,9 +208,9 @@ export function SaidaPage() {
               <Label required>Tipo de Saída</Label>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div
-                  onClick={() => setTipoSaida("distribuicao")}
+                  onClick={() => setTipoSaida("Distribuição")}
                   className={`flex flex-col p-4 rounded-xl border cursor-pointer transition-all ${
-                    tipoSaida === "distribuicao"
+                    tipoSaida === "Distribuição"
                       ? "bg-sky-50 border-sky-600 text-sky-950 shadow-xs ring-1 ring-sky-600"
                       : "bg-white border-stone-200 text-stone-600 hover:bg-stone-50"
                   }`}
@@ -218,7 +218,7 @@ export function SaidaPage() {
                   <div className="flex items-center gap-2.5">
                     <div
                       className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                        tipoSaida === "distribuicao"
+                        tipoSaida === "Distribuição"
                           ? "bg-sky-600 text-white"
                           : "bg-stone-100 text-stone-500"
                       }`}
@@ -233,9 +233,9 @@ export function SaidaPage() {
                 </div>
 
                 <div
-                  onClick={() => setTipoSaida("consumo")}
+                  onClick={() => setTipoSaida("Consumo")}
                   className={`flex flex-col p-4 rounded-xl border cursor-pointer transition-all ${
-                    tipoSaida === "consumo"
+                    tipoSaida === "Consumo"
                       ? "bg-stone-100 border-stone-600 text-stone-950 shadow-xs ring-1 ring-stone-600"
                       : "bg-white border-stone-200 text-stone-600 hover:bg-stone-50"
                   }`}
@@ -243,7 +243,7 @@ export function SaidaPage() {
                   <div className="flex items-center gap-2.5">
                     <div
                       className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                        tipoSaida === "consumo"
+                        tipoSaida === "Consumo"
                           ? "bg-stone-700 text-white"
                           : "bg-stone-100 text-stone-500"
                       }`}
@@ -258,9 +258,9 @@ export function SaidaPage() {
                 </div>
 
                 <div
-                  onClick={() => setTipoSaida("perda")}
+                  onClick={() => setTipoSaida("Perda")}
                   className={`flex flex-col p-4 rounded-xl border cursor-pointer transition-all ${
-                    tipoSaida === "perda"
+                    tipoSaida === "Perda"
                       ? "bg-red-50 border-red-600 text-red-950 shadow-xs ring-1 ring-red-600"
                       : "bg-white border-stone-200 text-stone-600 hover:bg-stone-50"
                   }`}
@@ -268,7 +268,7 @@ export function SaidaPage() {
                   <div className="flex items-center gap-2.5">
                     <div
                       className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                        tipoSaida === "perda"
+                        tipoSaida === "Perda"
                           ? "bg-red-600 text-white"
                           : "bg-stone-100 text-stone-500"
                       }`}
@@ -375,13 +375,13 @@ export function SaidaPage() {
                 />
               </div>
 
-              {tipoSaida === "distribuicao" && (
+              {tipoSaida === "Distribuição" && (
                 <>
                   <div>
-                    <Label required>Família Beneficiada</Label>
+                    <Label required>Família / ONG / Pessoa Beneficiada</Label>
                     <Input
                       list="sugestoes-familias"
-                      placeholder="Ex: Família Santos"
+                      placeholder="Ex: Família Brito, ONG Esperança..."
                       value={familiaNome}
                       onChange={(e) => setFamiliaNome(e.target.value)}
                       error={erros.familiaNome}
@@ -394,7 +394,7 @@ export function SaidaPage() {
                   </div>
 
                   <div>
-                    <Label required>Bairro / Comunidade</Label>
+                    <Label required>Local / Bairro / Comunidade</Label>
                     <Input
                       list="sugestoes-bairros"
                       placeholder="Ex: Jardim Esperança, Vila Nova..."
@@ -411,7 +411,7 @@ export function SaidaPage() {
                 </>
               )}
 
-              {tipoSaida === "perda" && (
+              {tipoSaida === "Perda" && (
                 <div className="md:col-span-2">
                   <Label required>Motivo da Perda</Label>
                   <Select
@@ -431,9 +431,9 @@ export function SaidaPage() {
                 <textarea
                   rows={2}
                   placeholder={
-                    tipoSaida === "distribuicao"
+                    tipoSaida === "Distribuição"
                       ? "Anotações adicionais da entrega, composição de cesta básica..."
-                      : tipoSaida === "consumo"
+                      : tipoSaida === "Consumo"
                       ? "Setor de destino ou refeição comunitária servida..."
                       : "Explicação do descarte ou procedimento de destinação..."
                   }
